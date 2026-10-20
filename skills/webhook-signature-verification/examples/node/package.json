@@ -1,0 +1,9 @@
+{
+  "name": "webhook-signature-verification-node",
+  "private": true,
+  "type": "module",
+  "description": "Webhook signature verification for the common scheme families, tested against openssl-signed vectors.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

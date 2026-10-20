@@ -1,0 +1,41 @@
+{
+  "read": "2026-10-20",
+  "sources": {
+    "slack": "https://docs.slack.dev/messaging/formatting-message-text (Escaping text: & < > only)",
+    "telegramMarkdownV2": "https://core.telegram.org/bots/api#formatting-options (MarkdownV2: _ * [ ] ( ) ~ ` > # + - = | { } . ! and backslash, each escaped with a backslash)",
+    "telegramHtml": "https://core.telegram.org/bots/api#formatting-options (HTML: < > & not part of a tag or entity)",
+    "html": "HTML text and attribute escaping: & < > \" '",
+    "log": "One line per entry: control characters, CR, LF and the Unicode line and paragraph separators are shown as escapes"
+  },
+  "slack": [
+    ["plain text", "plain text"],
+    ["<!channel> pay now", "&lt;!channel&gt; pay now"],
+    ["<@U012AB3CD> and <https://evil.example|click>", "&lt;@U012AB3CD&gt; and &lt;https://evil.example|click&gt;"],
+    ["Tom & Jerry", "Tom &amp; Jerry"],
+    ["already &amp; escaped", "already &amp;amp; escaped"],
+    ["*bold* _it_ `code`", "*bold* _it_ `code`"]
+  ],
+  "telegramMarkdownV2": [
+    ["plain text", "plain text"],
+    ["1.5 * 2 = 3!", "1\\.5 \\* 2 \\= 3\\!"],
+    ["[click](https://evil.example)", "\\[click\\]\\(https://evil\\.example\\)"],
+    ["a_b~c`d>e#f+g-h|i{j}k", "a\\_b\\~c\\`d\\>e\\#f\\+g\\-h\\|i\\{j\\}k"],
+    ["back\\slash", "back\\\\slash"]
+  ],
+  "telegramHtml": [
+    ["plain text", "plain text"],
+    ["<b>bold</b> & <a href=\"x\">", "&lt;b&gt;bold&lt;/b&gt; &amp; &lt;a href=\"x\"&gt;"]
+  ],
+  "html": [
+    ["plain", "plain"],
+    ["<script>alert('x')</script>", "&lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;"],
+    ["\"quoted\" & more", "&quot;quoted&quot; &amp; more"]
+  ],
+  "log": [
+    ["plain", "plain"],
+    ["line one\nFORGED: admin login ok", "line one\\nFORGED: admin login ok"],
+    ["carriage\rreturn and tab\t", "carriage\\rreturn and tab\\t"],
+    ["unicode\u2028line", "unicode\\u2028line"],
+    ["bell\u0007", "bell\\u0007"]
+  ]
+}

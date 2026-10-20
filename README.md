@@ -22,6 +22,20 @@ Desktop, Zed, Cline and claude.ai.
 | [webhookvault-setup-endpoint](skills/webhookvault-setup-endpoint/SKILL.md) | Walks through creating an endpoint, pointing a provider at it and confirming the first capture |
 | [webhookvault-ci-await-testing](skills/webhookvault-ci-await-testing/SKILL.md) | Asserts in CI that a webhook fires, with a self-expiring endpoint and one blocking API call |
 
+General webhook engineering, for any sender and any receiver, no WebhookVault needed:
+
+| Skill | What it does |
+|---|---|
+| [webhook-signature-verification](skills/webhook-signature-verification/SKILL.md) | Verifies every common signature scheme correctly, with tested Node.js, Python and C# code checked against openssl and the senders' own published examples |
+| [webhook-receiver-patterns](skills/webhook-receiver-patterns/SKILL.md) | The handler sequence (size cap, raw body, verify, deduplicate, acknowledge, process later), with tested Express, FastAPI and ASP.NET Core skeletons |
+| [webhook-idempotency](skills/webhook-idempotency/SKILL.md) | Processes each event at most once: the dedupe key, an insert-first claim in the same transaction, concurrent duplicates, partial failure, tested on PostgreSQL |
+| [webhook-retries-and-responses](skills/webhook-retries-and-responses/SKILL.md) | Status codes and timing for receivers; backoff with full jitter, Retry-After, budgets and dead letters for senders, with tested code |
+| [webhook-event-ordering](skills/webhook-event-ordering/SKILL.md) | Out-of-order webhooks: compare versions before writing, tombstones for deletes, fetching current state, reconciliation, tested on PostgreSQL |
+| [webhook-hostile-payloads](skills/webhook-hostile-payloads/SKILL.md) | Payload text is written by strangers: escaping for Slack, Discord, Teams, Telegram, HTML, SQL, shells and logs, and keeping injected text from steering an assistant |
+| [webhook-testing-strategy](skills/webhook-testing-strategy/SKILL.md) | Testing receivers: real captured samples as scrubbed fixtures, signed test requests, and the duplicate, ordering, failure and hostile-text cases |
+
+Claude Code installs the general skills with `/plugin install webhook-engineering@webhookvault-skills`.
+
 ## What the skills need
 
 - **The MCP server** for most of the skills: `https://mcp.webhookvault.net`, connected with an
@@ -86,5 +100,5 @@ numbers. Report a skill that gets this wrong to security@webhookvault.net (see
 
 ## Licence
 
-MIT, for the text and code in this repository. The WebhookVault name and logo are not licensed.
+MIT, for the text and code in this repository.
 Provider names are used only to identify the provider.

@@ -39,6 +39,9 @@ const SAFETY_END = "<!-- safety:end -->";
 const textRules = [
   { re: /[–—]/u, why: "en or em dash; use a colon, comma, full stop or parentheses", inCode: true },
   { re: /\p{Extended_Pictographic}/u, why: "emoji", inCode: true },
+  // Invisible or line-breaking characters typed raw: unreadable in review, and U+2028 ends a line
+  // inside a JavaScript regex or a C# string. Write them as \u escapes.
+  { re: /[\u200b-\u200f\u2028\u2029\u202a-\u202e\u2066-\u2069\ufeff]/u, why: "an invisible or line-separator character; write it as a \\u escape", inCode: true },
   { re: /\bthe vault\b/i, why: 'say "WebhookVault", never "the vault"' },
   { re: /\bwatchdogs?\b[^.\n]{0,60}\blearn(s|ed|ing)?\b/i, why: "watchdogs do not learn; the owner sets the interval" },
   { re: /\b(as a|being|i am a|we are) human\b|\bhuman[- ]written\b|\breal humans?\b/i, why: "no assertions about humans" },

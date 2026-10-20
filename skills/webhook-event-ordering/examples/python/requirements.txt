@@ -1,0 +1,2 @@
+# Pinned to the release current on 2026-10-20 (PyPI). The binary extra bundles libpq.
+psycopg[binary]==3.3.6

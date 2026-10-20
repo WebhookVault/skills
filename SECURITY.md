@@ -16,7 +16,7 @@ instruction here can do real harm, so reports are taken seriously.
 
 ## How to report
 
-Email security@webhookvault.net with the skill name, the file and line, what an assistant did or
+Email support@webhookvault.net with the skill name, the file and line, what an assistant did or
 could do, and the client and model if you saw it happen. Please do not open a public issue for a
 problem that could be used against someone before it is fixed.
 

@@ -1,0 +1,9 @@
+{
+  "name": "webhook-hostile-payloads-node",
+  "private": true,
+  "type": "module",
+  "description": "Escaping untrusted webhook text for Slack, Telegram, Discord, HTML and logs, tested against the documented rules.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

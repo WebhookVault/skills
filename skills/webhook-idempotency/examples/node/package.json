@@ -1,0 +1,10 @@
+{
+  "name": "webhook-idempotency-node",
+  "private": true,
+  "type": "module",
+  "description": "Process a webhook event at most once with PostgreSQL, tested against a real database.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" },
+  "dependencies": { "pg": "8.23.1" }
+}

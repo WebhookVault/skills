@@ -1,0 +1,3 @@
+# Pinned to the releases current on 2026-10-20 (PyPI). httpx is needed by FastAPI's TestClient only.
+fastapi==0.151.0
+httpx==0.28.1

@@ -21,6 +21,20 @@
         "./skills/webhookvault-setup-endpoint",
         "./skills/webhookvault-ci-await-testing"
       ]
+    },
+    {
+      "name": "webhook-engineering",
+      "description": "Provider-neutral webhook engineering: signature verification with tested Node.js, Python and C# code, and the patterns a reliable receiver needs.",
+      "source": "./",
+      "skills": [
+        "./skills/webhook-signature-verification",
+        "./skills/webhook-receiver-patterns",
+        "./skills/webhook-idempotency",
+        "./skills/webhook-retries-and-responses",
+        "./skills/webhook-event-ordering",
+        "./skills/webhook-hostile-payloads",
+        "./skills/webhook-testing-strategy"
+      ]
     }
   ]
 }

@@ -12,6 +12,9 @@ machine before a change is merged or a release is tagged:
 ```bash
 node tools/validate.mjs        # format, size, voice and safety rules
 node tools/check-tools.mjs     # skills against the MCP server's published contract
+bash tools/test-examples.sh    # every example's tests (Node.js 18+, Python 3.9+, .NET 10 SDK,
+                               # openssl 3 on PATH, and WEBHOOK_TEST_DATABASE_URL for a PostgreSQL
+                               # database the database examples may create a schema in)
 claude plugin validate .       # the Claude Code marketplace manifest
 ```
 
@@ -32,6 +35,9 @@ MCP server; edit the shared file, never the stamped copies.
 - **Tools.** Name MCP tools exactly as the server does, written as `tool_name(arg, arg)` where
   arguments matter, and list every tool a skill names in `metadata.mcp-tools`. The check fails on a
   tool or argument the server does not have.
+- **Code.** Examples are Node.js, Python or C#, each with tests that check it against something
+  outside itself (a provider's published example, or the openssl command line), pinned dependencies,
+  and a README saying why each dependency is there.
 - **Facts.** Every fact about WebhookVault comes from its documentation or published contract; every
   fact about a provider comes from that provider's own pages, with the date it was read. Write "not
   stated by the provider" where nothing is stated. No numbers from memory.
@@ -55,7 +61,7 @@ MCP server; edit the shared file, never the stamped copies.
 
 - A wrong provider fact: open an issue with the provider, the page, a quote and the date.
 - A skill that misled an assistant: open an issue with the client, the prompt and what happened.
-- Anything that could be used to cause harm: email security@webhookvault.net instead (SECURITY.md).
+- Anything that could be used to cause harm: email support@webhookvault.net instead (SECURITY.md).
 
 By contributing you agree that your contribution is licensed under the MIT licence of this
 repository.

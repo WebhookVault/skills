@@ -1,0 +1,9 @@
+{
+  "name": "webhook-retries-node",
+  "private": true,
+  "type": "module",
+  "description": "Backoff with full jitter, Retry-After and a retry budget, tested deterministically.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

@@ -1,0 +1,3 @@
+# Only the Ed25519 and ECDSA verifiers need this; the HMAC verifiers use the standard library.
+# Pinned to the release current on 2026-10-20 (PyPI).
+cryptography==50.0.2
