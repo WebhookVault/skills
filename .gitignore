@@ -10,3 +10,6 @@ __pycache__/
 bin/
 obj/
 TestResults/
+
+# The generated eval harness and its run results (tools/eval-harness.mjs, tools/run-evals.sh).
+evals/.harness/

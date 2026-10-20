@@ -2,6 +2,15 @@
 
 Newest first. Headings are plain titles; release tags carry the versions.
 
+## Scenario evals
+
+Twenty cases run with Claude Code's `claude plugin eval`: each workflow skill's normal path, cases
+where the assistant must ask before replaying, resuming a watchdog or creating a temporary endpoint,
+cases with instructions hidden in a captured payload or a receiver's response, secrets pasted into the
+chat, and checks on the provider and general skills' code. Workflow cases run against a local WebhookVault
+seeded by `evals/local/seed.py`; the rest need no server. `webhookvault-test-receiver` now says what to
+do when a capture URL is not reachable from the internet, without suggesting tunnelling software.
+
 ## Provider skills for twelve senders
 
 Stripe, GitHub, Shopify, Slack, Twilio, SendGrid, Resend, Paddle, PayPal, Discord, Lemon Squeezy and

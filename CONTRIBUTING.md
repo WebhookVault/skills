@@ -17,7 +17,11 @@ bash tools/test-examples.sh    # every example's tests (Node.js 18+, Python 3.9+
                                # database the database examples may create a schema in)
 claude plugin validate .       # the Claude Code marketplace manifest
 node tools/stale-facts.mjs     # provider facts read more than 90 days ago (release gate)
+bash tools/run-evals.sh        # scenario evals that need no server; --local for all (evals/README.md)
 ```
+
+A change to what a skill tells an assistant to do runs the evals for that skill (`--case`), against a
+local WebhookVault for the workflow skills. A release runs every case with `--runs 3`.
 
 `node tools/validate.mjs --stamp` writes `shared/safety-block.md` into every skill that drives the
 MCP server; edit the shared file, never the stamped copies.

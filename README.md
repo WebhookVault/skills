@@ -112,6 +112,12 @@ returns third-party text under a field named `untrusted`, redacts credentials an
 numbers. Report a skill that gets this wrong to support@webhookvault.net (see
 [SECURITY.md](SECURITY.md)).
 
+This repository contains deliberate attack samples, labelled as such wherever they appear: the
+injected text in the examples' fixtures, the payloads `webhook-hostile-payloads` escapes, and the
+failing receiver under `evals/local`. They exist so the examples and the evals can prove an
+assistant reports injected text instead of obeying it. None of them is an instruction to an
+assistant, and none carries a real secret or real personal data.
+
 ## Links
 
 - Documentation: https://docs.webhookvault.net
