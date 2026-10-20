@@ -1,0 +1,6 @@
+{
+  "copiedOn": "2026-10-20",
+  "source": "https://docs.webhookvault.net/mcp-tools.json",
+  "productCommit": "cee4203 plus the snapshot export (uncommitted at copy time)",
+  "note": "data/mcp-tools.snapshot.json is a byte copy of that file. Replace both files together at each MCP release, then run node tools/check-tools.mjs."
+}

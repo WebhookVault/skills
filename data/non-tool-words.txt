@@ -1,0 +1,65 @@
+# snake_case words that may appear in backticks in a workflow skill without being MCP tools.
+# tools/check-tools.mjs fails on any other snake_case word in backticks, so a misspelt or renamed
+# tool cannot hide in a skill. Add a word here only with the reason as a comment above it.
+
+# Error codes the MCP server returns (https://docs.webhookvault.net/documentation/mcp, Errors).
+not_found
+validation_failed
+feature_not_in_plan
+busy
+rate_limited
+limit_reached
+timeout
+search_too_broad
+too_large
+response_too_large
+endpoint_inactive
+endpoint_expired
+endpoint_in_use
+forwarding_disabled
+action_inactive
+nothing_to_replay
+already_delivered
+key_revoked
+internal_error
+
+# Refusals before any tool runs (MCP server and API).
+developer_key_not_accepted
+agent_key_not_accepted
+api_access_disabled
+
+# Finding codes diagnose_endpoint returns (read from the server source, 2026-10-20).
+endpoint_expired
+endpoint_expiring
+endpoint_off
+endpoint_off_by_plan
+no_traffic
+verification_failing
+deliveries_failing
+dead_letters
+deliveries_interrupted
+no_actions
+actions_all_off
+rule_disabled
+rule_faulting
+watchdog_alarmed
+watchdog_overdue
+watchdog_endpoint_off
+watchdog_plan
+alert_channel_failing
+alerts_email_only
+recent_changes
+payloads_over_cap
+
+# Delivery error classes get_endpoint_errors and get_delivery report (tool description, 2026-10-20).
+connection_refused
+blocked_target
+http_status
+
+# Secret and key prefixes named in prose (never with a value after them).
+whsec_
+wv_live_
+
+# The two MCP prompts.
+debug_missing_webhook
+test_my_receiver

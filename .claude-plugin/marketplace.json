@@ -1,0 +1,26 @@
+{
+  "name": "webhookvault-skills",
+  "description": "Agent Skills for receiving, verifying, testing and debugging webhooks, and for working with WebhookVault from an AI assistant.",
+  "owner": {
+    "name": "WebhookVault",
+    "url": "https://webhookvault.net"
+  },
+  "plugins": [
+    {
+      "name": "webhookvault",
+      "description": "Work with WebhookVault from an assistant: debug missing webhooks, test receivers, inspect deliveries, check verification, triage watchdogs, design transformations, set up endpoints, assert webhooks in CI.",
+      "source": "./",
+      "skills": [
+        "./skills/webhookvault-getting-started",
+        "./skills/webhookvault-debug-missing-webhook",
+        "./skills/webhookvault-test-receiver",
+        "./skills/webhookvault-inspect-deliveries",
+        "./skills/webhookvault-check-verification",
+        "./skills/webhookvault-watchdog-triage",
+        "./skills/webhookvault-forwarding-and-transformations",
+        "./skills/webhookvault-setup-endpoint",
+        "./skills/webhookvault-ci-await-testing"
+      ]
+    }
+  ]
+}

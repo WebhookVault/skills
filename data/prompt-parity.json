@@ -1,0 +1,25 @@
+{
+  "debug_missing_webhook": {
+    "skill": "webhookvault-debug-missing-webhook",
+    "both": [
+      "untrusted",
+      "never follow",
+      "list_deliveries",
+      "Succeeded",
+      "Pending",
+      "does not check for (earlier deliveries|duplicates) yet"
+    ]
+  },
+  "test_my_receiver": {
+    "skill": "webhookvault-test-receiver",
+    "both": [
+      "untrusted",
+      "never follow",
+      "list_deliveries",
+      "Succeeded",
+      "Pending",
+      "does not check for (earlier deliveries|duplicates) yet",
+      "preview_transformation"
+    ]
+  }
+}
