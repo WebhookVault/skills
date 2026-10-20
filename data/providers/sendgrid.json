@@ -1,0 +1,363 @@
+{
+  "slug": "sendgrid",
+  "name": "SendGrid",
+  "domains": [
+    "www.twilio.com",
+    "raw.githubusercontent.com/sendgrid/",
+    "github.com/sendgrid/"
+  ],
+  "docs_home": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook",
+  "signature": {
+    "header": {
+      "value": "X-Twilio-Email-Event-Webhook-Signature, with the timestamp in X-Twilio-Email-Event-Webhook-Timestamp",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "The private key will be used to generate a signature that is posted to your HTTP webhook in the X-Twilio-Email-Event-Webhook-Signature header.",
+      "short": "X-Twilio-Email-Event-Webhook-Signature, with X-Twilio-Email-Event-Webhook-Timestamp"
+    },
+    "scheme": {
+      "value": "ECDSA (Elliptic Curve Digital Signature Algorithm) over a SHA-256 hash; signature is Base64 of an ASN.1 (r,s) structure. The page does not name the curve.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Twilio SendGrid generates the private and public key pair using the Elliptic Curve Digital Signature Algorithm (ECDSA).",
+      "short": "ECDSA with SHA-256, base64 signature (P-256 key in the official helpers)"
+    },
+    "signature_decoding": {
+      "value": "Base64-decode the header value, then ASN.1 unmarshal into the r and s values",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Decode the Base64 encoded signature. Then perform an ASN.1 unmarshal of the decoded signature into a string."
+    },
+    "signed_content": {
+      "value": "SHA-256 hash of the timestamp header value concatenated with the raw payload bytes (timestamp first, no separator), then ECDSA-verified against that digest",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Generate a sha256 hash of the timestamp + payload (use raw bytes).",
+      "short": "{timestamp}{raw body}, no separator"
+    },
+    "header_format": {
+      "value": "Single Base64 signature in one header; separate header for the timestamp",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Get the signature from the \"X-Twilio-Email-Event-Webhook-Signature\" HTTP header."
+    },
+    "secret_source": {
+      "value": "A public verification key shown in the webhook's settings dialog after you enable Signed Event Webhook and Save (Settings > Mail Settings > Webhook Settings > Event Webhooks, edit, Security features). The key pair is only generated on Save. Can also be managed via the Event Webhook API.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "You must click Save in order to generate a verification key and enable signature verification.",
+      "short": "Verification public key, shown after enabling Signed Event Webhook and saving"
+    },
+    "public_key_format": {
+      "value": "The docs page does not state the encoding. Official SDK helpers take the key as the bare base64 string shown in the UI (no PEM header lines): the Python helper wraps it in BEGIN/END PUBLIC KEY lines before loading, i.e. a base64 DER SubjectPublicKeyInfo.",
+      "source_url": "https://raw.githubusercontent.com/sendgrid/sendgrid-python/main/sendgrid/helpers/eventwebhook/__init__.py",
+      "read": "2026-10-20",
+      "quote": "pem_key = \"-----BEGIN PUBLIC KEY-----\\n\" + public_key + \"\\n-----END PUBLIC KEY-----\""
+    },
+    "secret_scope": {
+      "value": "Per Event Webhook configuration (the key pair belongs to a webhook; you can have several webhooks). The page says disabling deletes that webhook's key pair.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "To disable signature verification, which will delete the Webhook's existing key pair:"
+    },
+    "timestamp_tolerance": {
+      "value": "not stated by the provider (the timestamp is signed, but no window is given)",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "Not stated"
+    },
+    "rotation": {
+      "value": "not stated by the provider. Turning signature verification off and saving deletes the webhook's key pair.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Your key pair will not be deleted until you click Save."
+    },
+    "raw_body_note": {
+      "value": "Payload must be used in its raw bytes form; converting to a JSON string can remove characters that were part of the signed bytes",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Transformations from raw bytes to a JSON string may remove characters that were used as part of the generated signature."
+    },
+    "oauth_alternative": {
+      "value": "OAuth 2.0 Client Credentials is a separate option: SendGrid sends the access token in an Authorization header. On an invalid or expired token the endpoint must return 4xx with invalid_request, invalid_token or insufficient_scope in the body so SendGrid fetches a new token and retries.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Upon receiving any of these error codes from your webhook, SendGrid will request a new OAuth token from your OAuth service and retry the webhook."
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "EventWebhook class in the Node.js library: new EventWebhook(); convertPublicKeyToECDSA(publicKey); verifySignature(publicKey, payload, signature, timestamp). Header-name constants via EventWebhookHeader.SIGNATURE() and EventWebhookHeader.TIMESTAMP(). Source computes timestamp + payload then verifies the Base64 signature.",
+        "source_url": "https://raw.githubusercontent.com/sendgrid/sendgrid-nodejs/main/packages/eventwebhook/src/eventwebhook.js",
+        "read": "2026-10-20",
+        "quote": "verifySignature(publicKey, payload, signature, timestamp) {"
+      },
+      "python": {
+        "value": "from sendgrid import EventWebhook; ew = EventWebhook(); key = ew.convert_public_key_to_ecdsa(public_key); ew.verify_signature(payload, signature, timestamp, key). Source: (timestamp + payload).encode, base64.b64decode(signature), ECDSA with SHA256.",
+        "source_url": "https://raw.githubusercontent.com/sendgrid/sendgrid-python/main/sendgrid/helpers/eventwebhook/__init__.py",
+        "read": "2026-10-20",
+        "quote": "def verify_signature(self, payload, signature, timestamp, public_key=None):"
+      },
+      "dotnet": {
+        "value": "SendGrid.Helpers.EventWebhook.RequestValidator: ConvertPublicKeyToECDSA(publicKey); VerifySignature(ecPublicKey, requestBody, signature, timestamp); constants RequestValidator.SIGNATURE_HEADER and TIMESTAMP_HEADER.",
+        "source_url": "https://raw.githubusercontent.com/sendgrid/sendgrid-csharp/main/src/SendGrid/Helpers/EventWebhook/RequestValidator.cs",
+        "read": "2026-10-20",
+        "quote": "public bool VerifySignature(PublicKey publicKey, string payload, string signature, string timestamp)"
+      },
+      "docs_listing": {
+        "value": "The docs say the API libraries for C#, Go, Java, Node.js, PHP, Python and Ruby carry Event Webhook verification helpers.",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+        "read": "2026-10-20",
+        "quote": "The Twilio SendGrid API libraries contain helpers to assist you when verifying the ECDSA signature."
+      }
+    },
+    "published_test_vector": null,
+    "sdk_test_vector_note": {
+      "value": "The docs print no worked example. The official Python library's unit test has one; its payload ends with a carriage return and newline, which the test comment stresses.",
+      "source_url": "https://raw.githubusercontent.com/sendgrid/sendgrid-python/main/test/unit/test_eventwebhook.py",
+      "read": "2026-10-20",
+      "quote": "# Be sure to include the trailing carriage return and newline!"
+    }
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "HTTP POST with a JSON array of events (Content-Type application/json in the docs' curl example)",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "--header \"Content-Type: application/json\""
+    },
+    "event_type_location": {
+      "value": "event property on each event object",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+      "read": "2026-10-20",
+      "quote": "event Enum(String) Type of occurrence that triggered this event.",
+      "short": "event, on each object in the array"
+    },
+    "delivery_id": {
+      "value": "sg_event_id on each event: URL-safe Base64url string, at most 100 characters, unique per event; use for deduplication. (sg_message_id identifies the message, not the event.)",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+      "read": "2026-10-20",
+      "quote": "Unique ID that Twilio attached to this event. These URL-safe IDs can be no more than 100 characters long. Use this ID for deduplication purposes.",
+      "short": "sg_event_id, on each event"
+    },
+    "handshake": {
+      "value": "not stated by the provider (no setup handshake; a Test Your Integration button posts example events)",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook",
+      "read": "2026-10-20",
+      "quote": "Click this button to receive an HTTP POST request at your specified Post URL containing a JSON array of example events.",
+      "short": "None"
+    },
+    "batching": {
+      "value": "Arrays of events. Events post within approximately 30 seconds or when the batch size reaches 768 kilobytes, per server.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "Events post within approximately 30 seconds or when the batch size reaches 768 kilobytes."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "Any 2xx response",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook",
+      "read": "2026-10-20",
+      "quote": "If your web server does not return a 2xx response type, SendGrid will retry the POST request until it receives a 2xx response or the maximum time has elapsed.",
+      "short": "2xx"
+    },
+    "response_deadline": {
+      "value": "not stated by the provider",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "Not stated"
+    },
+    "retries": {
+      "value": "A non-2xx answer is retried at increasing intervals for up to 24 hours after the event occurred (a rolling 24 hours per event). The intervals and count are not stated.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook",
+      "read": "2026-10-20",
+      "quote": "All events are re-tried at increasing intervals for up to 24 hours after the event occurs. This time limit is a rolling 24 hours",
+      "short": "Increasing intervals for up to 24 hours per event"
+    },
+    "disabling": {
+      "value": "not stated by the provider for a failing endpoint (the overview mentions disabling only when a plan is downgraded)",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "Automatic disabling during a downgrade is determined by the Created Date."
+    },
+    "ordering": {
+      "value": "not stated by the provider",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "duplicates": {
+      "value": "Duplicate events can arrive; SendGrid recommends deduplicating on sg_event_id",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "It's possible to see duplicate events in the data posted by the Event Webhook."
+    }
+  },
+  "events": {
+    "full_list_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+    "event_values_quote": {
+      "value": "processed, dropped, delivered, deferred, bounce, open, click, spam report, unsubscribe, group_unsubscribe, group_resubscribe",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+      "read": "2026-10-20",
+      "quote": "Expects: processed, dropped, delivered, deferred, bounce, open, click, spam report, unsubscribe, group_unsubscribe, and group_resubscribe."
+    },
+    "common": [
+      {
+        "value": "processed",
+        "meaning": "SendGrid accepted the message for delivery",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "bounced, delivered, deferred, dropped, or processed."
+      },
+      {
+        "value": "delivered",
+        "meaning": "The receiving server accepted the message",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "bounced, delivered, deferred, dropped, or processed."
+      },
+      {
+        "value": "deferred",
+        "meaning": "The receiving server temporarily refused the message; SendGrid keeps trying",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "bounced, delivered, deferred, dropped, or processed."
+      },
+      {
+        "value": "bounce",
+        "meaning": "Hard bounce: receiving server does not accept mail for the recipient (type bounce)",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "The receiving server doesn't accept mail sent to this recipient."
+      },
+      {
+        "value": "dropped",
+        "meaning": "SendGrid dropped the message (for example prior unsubscribe or bounce)",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Twilio SendGrid dropped the message for one of the following reasons:"
+      },
+      {
+        "value": "open",
+        "meaning": "Recipient opened the HTML message (requires Open Tracking); sg_machine_open flags Apple Mail Privacy Protection opens",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Recipient has opened the HTML message. To track opens, turn on Open Tracking."
+      },
+      {
+        "value": "click",
+        "meaning": "Recipient clicked a tracked link (requires Click Tracking)",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Recipient clicked on a link within the message. To track clicks, turn on Click Tracking."
+      },
+      {
+        "value": "spamreport",
+        "meaning": "The recipient marked the message as spam (see the conflict note on the name)",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Recipient marked message as spam."
+      },
+      {
+        "value": "unsubscribe",
+        "meaning": "Recipient used the Opt Out of All Emails link",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Recipient clicked on the Opt Out of All Emails link."
+      },
+      {
+        "value": "group_unsubscribe",
+        "meaning": "Recipient unsubscribed from a specific group",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Recipient unsubscribed from a specific group."
+      },
+      {
+        "value": "group_resubscribe",
+        "meaning": "Recipient resubscribed to a specific group",
+        "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+        "read": "2026-10-20",
+        "quote": "Recipient resubscribed to a specific group by updating their preferences."
+      }
+    ]
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "SendGrid UI: Settings > Mail Settings > Webhook Settings > Event Webhooks > Create new webhook; fields Post URL and Actions to be posted are required. Also manageable with the Webhooks API.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook",
+      "read": "2026-10-20",
+      "quote": "Only the Post URL and Actions to be posted fields are required."
+    },
+    "test_tools": {
+      "value": "Test Your Integration button in the webhook dialog posts example events (no real mail data). Signature verification is not tested if you click it before the first Save.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "If you click Test Integration before clicking Save, signature verification will not be tested because the key pair is only generated once the Webhook is saved."
+    },
+    "ip_allowlist": {
+      "value": "No ranges published on the pages read; the page warns the IPs change often and not to block them",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "Our IPs often change because we constantly add more machines."
+    }
+  },
+  "gotchas": [
+    {
+      "value": "Verify against raw bytes; re-serialised JSON breaks the signature.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "we deliver a payload that must be used in its raw bytes form."
+    },
+    {
+      "value": "Duplicates happen; dedupe on sg_event_id.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "We recommend using some form of deduplication when processing or storing your Event Webhook data using the sg_event_id as a differentiator."
+    },
+    {
+      "value": "High-volume senders can produce tens or hundreds of posts per second; load test the receiver.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "the webhook URL may post tens or even hundreds of posts per second."
+    },
+    {
+      "value": "Do not block SendGrid IPs; they change often.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview",
+      "read": "2026-10-20",
+      "quote": "Make sure you are not blocking the SendGrid IP addresses that are trying to POST to your server."
+    },
+    {
+      "value": "The v2 eventnotify API call overwrites existing Event Webhook settings, including OAuth 2.0.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features",
+      "read": "2026-10-20",
+      "quote": "Using the v2 Web API's eventnotify API call will overwrite any previously configured Event Webhook notification settings, including OAuth 2.0."
+    },
+    {
+      "value": "Categories and unique arguments are stored as not-PII; never put personal data in them.",
+      "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook",
+      "read": "2026-10-20",
+      "quote": "You should take care not to place PII in this field."
+    }
+  ],
+  "conflicts": [
+    {
+      "topic": "The spam report event name",
+      "note": "The property table and its list of expected values write \"spam report\" with a space, while the example payload has \"spamreport\". Accept both until SendGrid settles it.",
+      "sources": [
+        {
+          "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+          "read": "2026-10-20",
+          "quote": "open, click, spam report, unsubscribe, and group_unsubscribe, and group_resubscribe."
+        },
+        {
+          "source_url": "https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event",
+          "read": "2026-10-20",
+          "quote": "\"event\" : \"spamreport\""
+        }
+      ]
+    }
+  ],
+  "unreadable": []
+}

@@ -2,6 +2,18 @@
 
 Newest first. Headings are plain titles; release tags carry the versions.
 
+## Provider skills for twelve senders
+
+Stripe, GitHub, Shopify, Slack, Twilio, SendGrid, Resend, Paddle, PayPal, Discord, Lemon Squeezy and
+WooCommerce, each with its signature scheme, events, retries, ordering and pitfalls, and Node.js, Python
+and C# handlers tested against requests signed by the openssl command line and, for Slack, Twilio and
+GitHub, against the worked examples in their own docs. Every fact is kept in `data/providers/` with the
+page it came from, the date it was read (October 2026) and the sentence that says it, and is rendered into
+each skill's `references/facts.md`. Where a sender's pages say nothing, the skill says so.
+
+New tools: `provider-facts.mjs` (checks and renders the facts), `stale-facts.mjs` (facts due for a
+re-read) and `make-provider-vectors.py` (the signed test requests).
+
 ## Webhook testing strategy
 
 How to test receivers: three layers, real captured samples as fixtures (with a tested scrubber for

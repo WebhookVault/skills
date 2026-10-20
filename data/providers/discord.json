@@ -1,0 +1,505 @@
+{
+  "slug": "discord",
+  "name": "Discord",
+  "domains": [
+    "discord.com/developers/",
+    "github.com/discord/",
+    "raw.githubusercontent.com/discord/"
+  ],
+  "docs_home": "https://discord.com/developers/docs/events/webhook-events",
+  "conflicts": [],
+  "unreadable": [],
+  "signature": {
+    "header": {
+      "value": [
+        "X-Signature-Ed25519",
+        "X-Signature-Timestamp"
+      ],
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "X-Signature-Ed25519 as a signature",
+      "short": "X-Signature-Ed25519, with X-Signature-Timestamp"
+    },
+    "scheme": {
+      "value": "Ed25519 detached signature, hex encoded, verified with the application public key (hex encoded); the docs example uses nacl.sign.detached.verify with hex-decoded signature and public key",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "nacl.sign.detached.verify( Buffer.from(timestamp + body), Buffer.from(signature, \"hex\"), Buffer.from(PUBLIC_KEY, \"hex\") )",
+      "short": "Ed25519, hex, checked with the application public key"
+    },
+    "signed_content": {
+      "value": "The value of X-Signature-Timestamp concatenated directly with the raw request body (timestamp + body, no separator)",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "Buffer.from(timestamp + body)",
+      "short": "{timestamp}{raw body}, no separator"
+    },
+    "header_format": {
+      "value": "X-Signature-Ed25519 carries the signature as a hex string; X-Signature-Timestamp carries the timestamp as a string. One signature, no prefixes or key=value pairs (inferred from the docs code examples, which hex-decode the whole header value)",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "Buffer.from(signature, \"hex\")"
+    },
+    "secret_source": {
+      "value": "The application's public key, found on the application in the Developer Portal",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "Your public key can be found on your application in the Developer Portal",
+      "short": "The application's public key (Developer Portal)"
+    },
+    "secret_scope": {
+      "value": "Per application (one public key per Discord application)",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "Your public key can be found on your application in the Developer Portal"
+    },
+    "raw_body_note": {
+      "value": "The docs JavaScript example uses req.rawBody and notes it is expected to be a string, not raw bytes",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "const body = req.rawBody; // rawBody is expected to be a string, not raw bytes"
+    },
+    "timestamp_tolerance": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "Not stated"
+    },
+    "rotation": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "on_invalid_signature": {
+      "value": "Respond 401",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "If the signature fails validation, your app should respond with a 401 error code."
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "verifyKey(rawBody, signature, timestamp, clientPublicKey), or verifyWebhookEventMiddleware(clientPublicKey), from the discord-interactions npm package (github.com/discord/discord-interactions-js)",
+        "source_url": "https://github.com/discord/discord-interactions-js",
+        "read": "2026-10-20",
+        "quote": "If you're using an express-like API, you can simplify things by using the `verifyWebhookEventMiddleware`."
+      },
+      "python": {
+        "value": "verify_key(raw_body, signature, timestamp, client_public_key) from the discord-interactions PyPI package; its README describes it for signed payloads POSTed to a webhook endpoint and does not mention Webhook Events by name",
+        "source_url": "https://github.com/discord/discord-interactions-python",
+        "read": "2026-10-20",
+        "quote": "Verify a signed payload POSTed to your webhook endpoint."
+      },
+      "dotnet": {
+        "value": "not stated by the provider",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": ""
+      }
+    },
+    "published_test_vector": null
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "POST (stated for the PING); request content type not stated",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Discord will send a POST request with a PING payload with a type: 0 to your endpoint."
+    },
+    "event_type_location": {
+      "value": "JSON path event.type (string such as APPLICATION_AUTHORIZED); the outer `type` is the webhook type (0 PING, 1 event)",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "The “Value” column corresponds to the event’s type field value in the event body object.",
+      "short": "event.type (outer type: 0 PING, 1 event)"
+    },
+    "envelope": {
+      "value": "{ version: 1, application_id: <snowflake>, type: 0|1, event: { type: <string>, timestamp: <ISO8601 string>, data: <object> } }; `event` is absent on PING",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Webhook events are wrapped in an outer payload, with an inner event object."
+    },
+    "envelope_version": {
+      "value": 1,
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Version scheme for the webhook event. Currently always 1"
+    },
+    "webhook_type": {
+      "value": "0 = PING, 1 = Event",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Type of webhook, either 0 for PING or 1 for webhook events"
+    },
+    "delivery_id": {
+      "value": "not stated by the provider (no delivery-id header or envelope field is documented; `data.id` on entitlement events is the entitlement ID, not a delivery ID)",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "Not stated"
+    },
+    "handshake": {
+      "value": "When the Webhook Events URL is added, Discord POSTs a PING payload with `type: 0`; the app must acknowledge with HTTP 204 and an empty body (plus a valid Content-Type) and must validate the signature headers, otherwise the URL is not validated",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Your app is expected to acknowledge the request by returning a 204 response with an empty body.",
+      "short": "PING (type 0): answer 204, empty body, after verifying"
+    },
+    "batching": {
+      "value": "One event per request (the envelope carries a single `event` object)",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Webhook events are wrapped in an outer payload, with an inner event object."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "HTTP 204 with no body",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "your app should respond with a 204 status code with no body within 3 seconds",
+      "short": "204, no body"
+    },
+    "response_deadline": {
+      "value": "3 seconds",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "your app should respond with a 204 status code with no body within 3 seconds",
+      "short": "3 seconds"
+    },
+    "retries": {
+      "value": "If the app does not respond, Discord retries several times with exponential backoff for up to 10 minutes. The number of attempts is not stated.",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Discord will retry sending it several times using exponential backoff for up to 10 minutes.",
+      "short": "Exponential back-off for up to 10 minutes"
+    },
+    "disabling": {
+      "value": "If the app fails to respond too often, Discord stops sending webhook events and notifies by email. The threshold is not stated. Separately, failing the routine invalid-signature security checks removes the Webhook Events URL and alerts via email and System DM.",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "If your app fails to respond too often, Discord will stop sending you webhook events and notify you via email."
+    },
+    "security_check_removal": {
+      "value": "Routine automated checks send invalid signatures on purpose; failing them removes the URL",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "If you fail the validation, we will remove your Webhook Events URL and alert you via email and System DM."
+    },
+    "ordering": {
+      "value": "Not guaranteed in order and not realtime",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "events sent over webhooks are not realtime or guaranteed to be in order."
+    },
+    "duplicates": {
+      "value": "not stated by the provider (retries imply a repeat can arrive if the 204 is late, but the page does not say so)",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": ""
+    }
+  },
+  "events": {
+    "full_list_url": "https://discord.com/developers/docs/events/webhook-events#event-types",
+    "common": [
+      {
+        "value": "APPLICATION_AUTHORIZED",
+        "meaning": "App added to a server or user account; data has user, scopes, optional guild and integration_type",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "APPLICATION_AUTHORIZED is sent when the app is added to a server or user account."
+      },
+      {
+        "value": "APPLICATION_DEAUTHORIZED",
+        "meaning": "A user deauthorized the app; data has the user",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "APPLICATION_DEAUTHORIZED is sent when the app is deauthorized by a user."
+      },
+      {
+        "value": "ENTITLEMENT_CREATE",
+        "meaning": "A user purchased or was granted one of the app's SKUs; data is an entitlement object",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "ENTITLEMENT_CREATE is sent when an entitlement is created when a user purchases or is otherwise granted one of your app’s SKUs."
+      },
+      {
+        "value": "ENTITLEMENT_UPDATE",
+        "meaning": "An entitlement changed; data is an entitlement object",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "ENTITLEMENT_UPDATE is sent when an entitlement is updated."
+      },
+      {
+        "value": "ENTITLEMENT_DELETE",
+        "meaning": "An entitlement was deleted; data is an entitlement object",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "ENTITLEMENT_DELETE is sent when an entitlement is deleted."
+      },
+      {
+        "value": "QUEST_USER_ENROLLMENT",
+        "meaning": "User added to a Quest; documented but not receivable by apps at present",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "This event cannot be received by apps at this time."
+      },
+      {
+        "value": "LOBBY_MESSAGE_CREATE",
+        "meaning": "Message created in a Social SDK lobby; data is a lobby message object",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "LOBBY_MESSAGE_CREATE is sent when a message is created in a lobby."
+      },
+      {
+        "value": "GAME_DIRECT_MESSAGE_CREATE",
+        "meaning": "Direct message created during an active Social SDK session",
+        "source_url": "https://discord.com/developers/docs/events/webhook-events",
+        "read": "2026-10-20",
+        "quote": "Sent when a direct message is created during an active Social SDK session"
+      }
+    ],
+    "other_listed_types": {
+      "value": [
+        "ENTITLEMENT_UPDATE",
+        "ENTITLEMENT_DELETE",
+        "LOBBY_MESSAGE_UPDATE",
+        "LOBBY_MESSAGE_DELETE",
+        "GAME_DIRECT_MESSAGE_UPDATE",
+        "GAME_DIRECT_MESSAGE_DELETE"
+      ],
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Sent when a message is updated in a lobby"
+    }
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "Developer Portal: the app's Webhooks page (left sidebar), Endpoint field, then toggle Events on and select events, then Save Changes. Via API: Edit Current Application.",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "Under Endpoint, add a public URL that is set up to receive and acknowledge webhook events."
+    },
+    "api_alternative": {
+      "value": "Edit Current Application",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "If you prefer to use the API, you can call Edit Current Application."
+    },
+    "gateway_alternative": {
+      "value": "A Webhook Events URL is not needed if the app uses Gateway events",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "If your app is using Gateway events, you don’t need to configure a Webhook Events URL."
+    },
+    "test_tools": {
+      "value": "not stated by the provider (the PING sent when the URL is saved is the only documented probe)",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "ip_allowlist": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": ""
+    }
+  },
+  "gotchas": [
+    {
+      "value": "The PING answer here differs from interactions: 204 with an empty body, not 200 with {type: 1}",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "returning a 204 response with an empty body."
+    },
+    {
+      "value": "Real events must also be answered 204, no body, within 3 seconds",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "your app should respond with a 204 status code with no body within 3 seconds"
+    },
+    {
+      "value": "The PING response needs a valid Content-Type",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "You must provide a valid Content-Type when responding to PINGs."
+    },
+    {
+      "value": "Webhook events are not realtime and not ordered",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "events sent over webhooks are not realtime or guaranteed to be in order."
+    },
+    {
+      "value": "Discord sends deliberately invalid signatures as routine checks and removes the URL if they are accepted",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "including purposefully sending you invalid signatures."
+    },
+    {
+      "value": "For Social SDK apps, APPLICATION_DEAUTHORIZED is the only out-of-game signal that a user's link state changed; missing it makes the next token use fail",
+      "source_url": "https://discord.com/developers/docs/events/webhook-events",
+      "read": "2026-10-20",
+      "quote": "if you miss the webhook, the next token use will fail"
+    }
+  ],
+  "interactions_endpoint": {
+    "delivery_method_and_content_type": {
+      "value": "POST; request content type not stated on these pages (body is the Interaction object JSON)",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "Discord will send a POST request with a PING payload with a type: 1 to your endpoint."
+    },
+    "delivery_event_type_location": {
+      "value": "JSON body field `type` (integer interaction type): PING=1, APPLICATION_COMMAND=2, MESSAGE_COMPONENT=3, APPLICATION_COMMAND_AUTOCOMPLETE=4, MODAL_SUBMIT=5. There is no event-name header.",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": "PING1 APPLICATION_COMMAND2 MESSAGE_COMPONENT3 APPLICATION_COMMAND_AUTOCOMPLETE4 MODAL_SUBMIT5"
+    },
+    "delivery_delivery_id": {
+      "value": "Body field `id` (snowflake, ID of the interaction). No delivery-id header is documented.",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": "idsnowflakeID of the interaction"
+    },
+    "delivery_handshake": {
+      "value": "When the Interactions Endpoint URL is saved, Discord POSTs a PING with `type: 1`; the app must return HTTP 200 with a PONG body `{\"type\": 1}` and a valid Content-Type, and must also validate the signature headers. If either is incomplete the URL is not validated.",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "returning a 200 response with a PONG payload (which has the same type: 1)"
+    },
+    "delivery_batching": {
+      "value": "One interaction object per request (the body is a single Interaction object)",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": "Interaction Structure"
+    },
+    "responding_success_status": {
+      "value": "HTTP 200 with a JSON Interaction Response object (`type` and optional `data`); for PING, 200 with `{\"type\": 1}`",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": "respond with a 200 status code (if everything went well), as well as specifying a type and data"
+    },
+    "responding_response_deadline": {
+      "value": "3 seconds for the initial response; if exceeded the interaction token is invalidated",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": "you must send an initial response within 3 seconds of receiving the event. If the 3 second deadline is exceeded, the token will be invalidated."
+    },
+    "token_lifetime": {
+      "value": "15 minutes (interaction token, usable for followup messages and edits)",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": "Interaction tokens are valid for 15 minutes"
+    },
+    "responding_retries": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "responding_disabling": {
+      "value": "Discord runs routine automated security checks against the endpoint, including purposefully sending invalid signatures; failing them removes the Interactions Endpoint URL and alerts via email and System DM. Failure behaviour for ordinary non-responses is not stated.",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "purposefully sending you invalid signatures. If you fail the validation, we will remove your interactions URL and alert you via email and System DM."
+    },
+    "responding_ordering": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "responding_duplicates": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "setup_where_url_is_entered": {
+      "value": "Developer Portal, the application's General Information page, in the Interactive Endpoint URL field",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "On the General Information page, look for the Interactive Endpoint URL field."
+    },
+    "default_transport": {
+      "value": "Without an endpoint URL the app receives interactions over the Gateway; HTTP delivery is opt-in",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": "By default your app will receive interactions via a Gateway connection, but you can opt-in to HTTP-based interactions"
+    },
+    "setup_test_tools": {
+      "value": "not stated by the provider (the PING sent on saving the URL is the only documented probe)",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "setup_ip_allowlist": {
+      "value": "not stated by the provider",
+      "source_url": "https://discord.com/developers/docs/interactions/overview",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "interaction_types": [
+      {
+        "value": "PING (type 1)",
+        "meaning": "Handshake sent when the endpoint URL is saved and at other validation times; answer 200 with {type: 1}",
+        "source_url": "https://discord.com/developers/docs/interactions/overview",
+        "read": "2026-10-20",
+        "quote": "returning a 200 response with a PONG payload (which has the same type: 1)"
+      },
+      {
+        "value": "PONG (callback type 1)",
+        "meaning": "The response value that acknowledges a PING",
+        "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+        "read": "2026-10-20",
+        "quote": "PONG1ACK a Ping"
+      },
+      {
+        "value": "CHANNEL_MESSAGE_WITH_SOURCE (callback type 4)",
+        "meaning": "Respond to an interaction with a message",
+        "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+        "read": "2026-10-20",
+        "quote": "CHANNEL_MESSAGE_WITH_SOURCE4Respond to an interaction with a message"
+      },
+      {
+        "value": "DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE (callback type 5)",
+        "meaning": "Acknowledge now, edit the response later; the user sees a loading state",
+        "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+        "read": "2026-10-20",
+        "quote": "ACK an interaction and edit a response later, the user sees a loading state"
+      }
+    ],
+    "pitfalls": [
+      {
+        "value": "Both the PING answer and the signature validation must be in place before the URL will save; Discord also sends deliberately invalid signatures later and expects 401",
+        "source_url": "https://discord.com/developers/docs/interactions/overview",
+        "read": "2026-10-20",
+        "quote": "If either of these are not complete, your Interactions Endpoint URL will not be validated."
+      },
+      {
+        "value": "The PING response needs a valid Content-Type",
+        "source_url": "https://discord.com/developers/docs/interactions/overview",
+        "read": "2026-10-20",
+        "quote": "You must provide a valid Content-Type when responding to PINGs."
+      },
+      {
+        "value": "The signed message is the timestamp header followed by the body; the docs example treats rawBody as a string, not bytes",
+        "source_url": "https://discord.com/developers/docs/interactions/overview",
+        "read": "2026-10-20",
+        "quote": "rawBody is expected to be a string, not raw bytes"
+      },
+      {
+        "value": "Missing the 3 second initial-response deadline invalidates the token",
+        "source_url": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+        "read": "2026-10-20",
+        "quote": "If the 3 second deadline is exceeded, the token will be invalidated."
+      }
+    ]
+  },
+  "research_notes": [
+    "Interactions are not named events; they are typed by the integer `type` field. Response callback types: PONG=1, CHANNEL_MESSAGE_WITH_SOURCE=4, DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE=5 (others exist on the page).",
+    "Discord has two HTTP mechanisms with the same signature: the Interactions Endpoint URL (slash commands, buttons; answered with an interaction response) and Webhook Events (app events such as APPLICATION_AUTHORIZED; answered 204). The standard sections above are Webhook Events; the Interactions endpoint section covers the other. The Webhook Events page does not restate the signature algorithm and refers to the Interactions documentation, so the signature facts come from there."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "twilio-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads Twilio webhook requests; tested against openssl-made vectors and Twilio's published example.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

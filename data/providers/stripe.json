@@ -1,0 +1,479 @@
+{
+  "slug": "stripe",
+  "name": "Stripe",
+  "domains": [
+    "docs.stripe.com",
+    "stripe.com/files/"
+  ],
+  "docs_home": "https://docs.stripe.com/webhooks",
+  "signature": {
+    "header": {
+      "value": "Stripe-Signature",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Stripe signs every webhook event by including a signature in the Stripe-Signature header.",
+      "short": "Stripe-Signature"
+    },
+    "scheme": {
+      "value": "HMAC-SHA256 (the docs do not say the encoding in words; the header example shows lowercase hex digests). Only scheme v1 is valid for live events; ignore all other schemes.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Stripe generates signatures using a hash-based message authentication code (HMAC) with SHA-256. To prevent downgrade attacks, ignore all schemes that aren't v1.",
+      "short": "HMAC-SHA256, hex; use only v1 signatures"
+    },
+    "signed_content": {
+      "value": "The timestamp (as a string), then the character '.', then the actual JSON payload (the raw request body). HMAC key is the endpoint's signing secret.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Compute an HMAC with the SHA256 hash function. Use the endpoint's signing secret as the key, and use the signed_payload string as the message.",
+      "short": "{t}.{raw body}"
+    },
+    "signed_content_parts": {
+      "value": "signed_payload = timestamp-as-string + '.' + request body",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "The actual JSON payload (that is, the request body)"
+    },
+    "header_format": {
+      "value": "Single-line header of comma-separated key=value elements: t=<unix timestamp>, one or more v1=<signature>, and (test events) a fake v0=<signature>. Split on ',' then on '='; use t and every v1, discard the rest. Multiple v1 values appear while a rolled secret is still active.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "The timestamp has a t= prefix"
+    },
+    "secret_source": {
+      "value": "The endpoint's signing secret, starting whsec_: in the Dashboard (Workbench, Webhooks tab, Reveal secret) or returned as signing_secret when the endpoint is created through the API. The Stripe CLI uses its own signing secret, different from a Dashboard endpoint's.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "a signing secret beginning with whsec_ appears. Click Reveal secret and copy the value",
+      "short": "Endpoint signing secret (whsec_...), per endpoint, test and live differ"
+    },
+    "secret_scope": {
+      "value": "Per endpoint, and different again for test and live on the same URL",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Stripe generates a unique secret key for each endpoint. If you use the same endpoint for both test and live API keys, the secret is different for each one."
+    },
+    "secret_scope_cli": {
+      "value": "The secret for a CLI-forwarded endpoint is different from the secret for a Dashboard-managed endpoint.",
+      "source_url": "https://docs.stripe.com/events/manage-webhook-endpoints",
+      "read": "2026-10-20",
+      "quote": "The secret for a CLI-forwarded endpoint is different from the secret for a Dashboard-managed endpoint"
+    },
+    "timestamp_tolerance": {
+      "value": "Official libraries default to 5 minutes between the header timestamp and current time; configurable by an extra parameter. A tolerance of 0 disables the recency check entirely. A new signature and timestamp are generated for every delivery attempt, including retries.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Our libraries have a default tolerance of 5 minutes between the timestamp and the current time. You can change this tolerance by providing an additional parameter when verifying signatures.",
+      "short": "Five minutes in Stripe's libraries; every retry is signed afresh"
+    },
+    "tolerance_zero_warning": {
+      "value": "A tolerance of 0 disables the recency check.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Using a tolerance value of 0 disables the recency check entirely."
+    },
+    "retry_resigns": {
+      "value": "Each retry gets a fresh timestamp and signature.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "If Stripe retries an event (for example, your endpoint previously replied with a non-2xx status code), then we generate a new signature and timestamp for the new delivery attempt."
+    },
+    "rotation": {
+      "value": "Roll secret in Workbench; the old secret can expire immediately or stay active up to 24 hours. While both are active Stripe sends one v1 signature per active secret, so the header carries multiple v1 values.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "You can choose to immediately expire the current secret or delay its expiration for up to 24 hours to allow yourself time to update the verification code on your server."
+    },
+    "rotation_multiple_signatures": {
+      "value": "Multiple v1 signatures in one header during the overlap.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "During this time, multiple secrets are active for the endpoint. Stripe generates one signature per secret until expiration."
+    },
+    "raw_body_note": {
+      "value": "Stripe requires the raw body; any framework manipulation (reordering keys, stripping whitespace, converting to JSON, changing encoding) breaks verification. Body must be the exact UTF-8 string Stripe sent. With Express, register the webhook route with express.raw before express.json.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Stripe requires the raw body of the request to perform signature verification. If you're using a framework, make sure it doesn't manipulate the raw body."
+    },
+    "raw_body_utf8": {
+      "value": "Exact UTF-8 string, unmodified.",
+      "source_url": "https://docs.stripe.com/events/manage-webhook-endpoints",
+      "read": "2026-10-20",
+      "quote": "The request body must be the exact UTF-8 string Stripe sent, without any modifications."
+    },
+    "comparison_note": {
+      "value": "Compare each v1 signature with the expected one using a constant-time string comparison.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "To protect against timing attacks, use a constant-time-string comparison to compare the expected signature to each of the received signatures."
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "stripe.webhooks.constructEvent(request.body, signature, endpointSecret) for snapshot events; client.parseEventNotification(request.body, sig, endpointSecret) for thin events",
+        "source_url": "https://docs.stripe.com/events/set-up-events",
+        "read": "2026-10-20",
+        "quote": "event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);"
+      },
+      "python": {
+        "value": "client.construct_event(payload, sig_header, endpoint_secret) on a stripe.StripeClient (webhooks quickstart); client.parse_event_notification(webhook_body, sig_header, webhook_secret) for thin events",
+        "source_url": "https://docs.stripe.com/webhooks/quickstart",
+        "read": "2026-10-20",
+        "quote": "event = client.construct_event( payload, sig_header, endpoint_secret )"
+      },
+      "dotnet": {
+        "value": "EventUtility.ConstructEvent(json, signatureHeader, endpointSecret) (Stripe.net)",
+        "source_url": "https://docs.stripe.com/webhooks/quickstart",
+        "read": "2026-10-20",
+        "quote": "stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret);"
+      }
+    },
+    "published_test_vector": null,
+    "published_test_vector_note": {
+      "value": "The docs show only an illustrative header (t=1492774577, v1=5257a869..., v0=6ffbb59b...) with no secret or body, so there is no complete worked example to copy.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "t=1492774577, v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd, v0=6ffbb59b2300aae63f272406069a9788598b792a944a07aba816edb039989a39"
+    }
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "HTTPS POST with a JSON payload. Content-Type header value is not stated by the provider.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Handles POST requests with a JSON payload that includes event information."
+    },
+    "event_type_location": {
+      "value": "Top-level 'type' field of the JSON body; event id in top-level 'id'; related resource under data (snapshot) or related_object (thin).",
+      "source_url": "https://docs.stripe.com/webhooks/quickstart",
+      "read": "2026-10-20",
+      "quote": "Each event is structured as an Event object with a type, id, and related Stripe resource nested under data.",
+      "short": "type (top level)"
+    },
+    "delivery_id": {
+      "value": "Event id (evt_...) in the body. Dedupe on it. In some cases two separate Event objects are generated for one occurrence; to catch those use the id of data.object together with event.type. Do not use 'created' to order or dedupe.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Webhook endpoints might occasionally receive the same event more than once. You can guard against duplicated event receipts by logging the event IDs you've processed",
+      "short": "id (evt_...) in the body"
+    },
+    "delivery_id_two_objects": {
+      "value": "Two separate Event objects can describe one occurrence.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "In some cases, two separate Event objects are generated and sent. To identify these duplicates, use the ID of the object in data.object along with the event.type."
+    },
+    "handshake": {
+      "value": "not stated by the provider (no challenge or ping on setup)",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "None"
+    },
+    "batching": {
+      "value": "not stated by the provider as a batching rule; the docs describe each delivery as one Event object",
+      "source_url": "https://docs.stripe.com/webhooks/quickstart",
+      "read": "2026-10-20",
+      "quote": "Each event is structured as an Event object"
+    },
+    "retried_events_same_id": {
+      "value": "not stated by the provider whether a retry carries the same event id; the docs say to track event IDs to identify duplicate deliveries",
+      "source_url": "https://docs.stripe.com/events/how-events-work",
+      "read": "2026-10-20",
+      "quote": "Track event IDs to identify duplicate deliveries instead."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "Any 2xx. Redirects (3xx) are treated as failures. 4xx, 5xx, timeouts and TLS errors are failures.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "We consider redirect responses to webhook requests as failures.",
+      "short": "2xx; redirects count as failures"
+    },
+    "success_status_2xx": {
+      "value": "Return 2xx before running any complex logic.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Quickly returns a successful status code (2xx) before any complex logic that might cause a timeout."
+    },
+    "response_deadline": {
+      "value": "not stated by the provider (no number of seconds). The docs only say to return quickly and list 'Timed out' as a failure status.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "The destination server took too long to respond to the webhook request.",
+      "short": "Not stated (\"return quickly\")"
+    },
+    "retries": {
+      "value": "Live mode: up to three days with exponential back off. Sandbox: three retries over a few hours (the page says sandbox; it does not use the words test mode). Next retry time is shown in the Event deliveries tab.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Stripe attempts to deliver events to your destination for up to three days with an exponential back off in live mode.",
+      "short": "Live: up to three days with exponential back-off; sandbox: three over a few hours"
+    },
+    "retries_sandbox": {
+      "value": "Sandbox deliveries: three retries over a few hours.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "We retry event deliveries created in a sandbox three times over the course of a few hours."
+    },
+    "retries_disabled_destination": {
+      "value": "Disabling or deleting a destination stops pending retries, unless it is re-enabled before the retry is attempted.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "If your destination has been disabled or deleted when we attempt a retry, we prevent future retries of that event."
+    },
+    "disabling": {
+      "value": "not stated by the provider: no page read says Stripe disables an endpoint after repeated failures. The pages only describe manual disable/re-enable, and the webhook endpoint object has a status of enabled or disabled.",
+      "source_url": "https://docs.stripe.com/api/webhook_endpoints/object",
+      "read": "2026-10-20",
+      "quote": "The status of the webhook. It can be enabled or disabled."
+    },
+    "disabling_manual": {
+      "value": "After you disable an event destination Stripe stops sending events to it; after re-enable Stripe resumes.",
+      "source_url": "https://docs.stripe.com/events/how-events-work",
+      "read": "2026-10-20",
+      "quote": "After you disable an event destination, Stripe stops sending any events to that destination. After you re-enable a destination, Stripe resumes sending events to it."
+    },
+    "ordering": {
+      "value": "Not guaranteed. Do not rely on created (seconds resolution, can tie); fetch missing objects from the API.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Stripe doesn't guarantee the delivery of events in the order that they're generated."
+    },
+    "duplicates": {
+      "value": "Can occur; log processed event ids and skip repeats.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Webhook endpoints might occasionally receive the same event more than once."
+    },
+    "manual_resend": {
+      "value": "Dashboard Resend works up to 15 days after event creation; CLI 'stripe events resend <event_id> --webhook-endpoint=<endpoint_id>' works up to 30 days. A manual resend does not cancel automatic retries, even if it returns 2xx; answer 2xx to an already-processed event to stop retries.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Manually resending an event that failed to reach a webhook endpoint doesn't cancel Stripe's automatic retry behavior, even if it results in a 2xx status code."
+    },
+    "tls": {
+      "value": "TLS 1.2 or 1.3 only; HTTPS URL required in live mode.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "If you use an HTTPS URL for your webhook endpoint (required in live mode)"
+    }
+  },
+  "events": {
+    "full_list_url": "https://docs.stripe.com/api/events/types",
+    "full_list_thin_url": "https://docs.stripe.com/api/v2/core/events/event-types",
+    "common": [
+      {
+        "value": "checkout.session.completed",
+        "meaning": "A Checkout Session finished successfully; typical trigger for fulfilment.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs when a Checkout Session has been successfully completed."
+      },
+      {
+        "value": "payment_intent.succeeded",
+        "meaning": "A PaymentIntent completed payment.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs when a PaymentIntent has successfully completed payment."
+      },
+      {
+        "value": "payment_intent.payment_failed",
+        "meaning": "A payment attempt on a PaymentIntent failed.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs when a PaymentIntent has failed the attempt to create a payment method or a payment."
+      },
+      {
+        "value": "invoice.paid",
+        "meaning": "An invoice was paid, or marked paid out of band.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever an invoice payment attempt succeeds or an invoice is marked as paid out-of-band."
+      },
+      {
+        "value": "invoice.payment_failed",
+        "meaning": "An invoice payment attempt failed (decline or no stored payment method).",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever an invoice payment attempt fails"
+      },
+      {
+        "value": "customer.subscription.created",
+        "meaning": "A customer was signed up for a new plan.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever a customer is signed up for a new plan."
+      },
+      {
+        "value": "customer.subscription.updated",
+        "meaning": "A subscription changed (plan switch, status change such as trial to active).",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever a subscription changes"
+      },
+      {
+        "value": "customer.subscription.deleted",
+        "meaning": "A subscription ended.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "subscription ends."
+      },
+      {
+        "value": "charge.refunded",
+        "meaning": "A charge was refunded, including partially.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever a charge is refunded, including partial refunds."
+      },
+      {
+        "value": "charge.dispute.created",
+        "meaning": "A customer disputed a charge with their bank.",
+        "source_url": "https://docs.stripe.com/api/events/types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever a customer disputes a charge with their bank."
+      }
+    ]
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "Workbench Webhooks tab: Create an event destination, choose Your account or Connected accounts, choose payload format Thin or Snapshot, select event types, destination type Webhook endpoint, then the URL. Or API: POST /v2/core/event_destinations. Maximum 16 event destinations.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "You can register up to 16 event destinations with Stripe. Registered webhook endpoints must be publicly accessible HTTPS URLs."
+    },
+    "test_tools": {
+      "value": "The Stripe CLI's 'stripe trigger <event>' creates test objects and fires the events they cause; events can be resent from the Dashboard (up to 15 days) or with 'stripe events resend' (up to 30 days).",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Because of this, triggering events causes side effects: all necessary API objects will be created in the process."
+    },
+    "cli_trigger_effects": {
+      "value": "stripe trigger makes real API calls in the test environment, so it has side effects and may emit several events.",
+      "source_url": "https://docs.stripe.com/cli/trigger",
+      "read": "2026-10-20",
+      "quote": "Because of this, triggering events causes side effects: all necessary API objects will be created in the process."
+    },
+    "cli_trigger_extra_events": {
+      "value": "One trigger can fire related events too.",
+      "source_url": "https://docs.stripe.com/cli/trigger",
+      "read": "2026-10-20",
+      "quote": "triggering payment_intent.succeeded also triggers payment_intent.created"
+    },
+    "ip_allowlist": {
+      "value": "Published list on the domains and IP addresses page, also downloadable as ips_webhooks.txt and ips_webhooks.json. Stripe gives seven days' notice of changes through the API announce mailing list. Docs recommend IP allowlisting together with (not instead of) signature verification.",
+      "source_url": "https://docs.stripe.com/ips",
+      "read": "2026-10-20",
+      "quote": "https://stripe.com/files/ips/ips_webhooks.txt"
+    }
+  },
+  "extras": {
+    "thin_vs_snapshot": {
+      "value": "Two payload formats chosen per destination. Thin: lightweight notification (type, id, created, related_object id/type/url), unversioned, typed in SDKs, fetch the resource or full event afterwards; recommended for new integrations; thin events need their own separate endpoint. Snapshot: full Event object with data.object and previous_attributes, versioned by API version.",
+      "source_url": "https://docs.stripe.com/events/how-events-work",
+      "read": "2026-10-20",
+      "quote": "For new integrations, use thin events. Thin events are unversioned, fully typed in the Stripe SDKs, and let your integration fetch the latest resource state."
+    },
+    "thin_needs_separate_endpoint": {
+      "value": "Register a separate endpoint for thin events.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "If you are using thin events, you will need to register a separate webhook endpoint."
+    },
+    "snapshot_staleness": {
+      "value": "Snapshot data.object can be stale; refetch before acting.",
+      "source_url": "https://docs.stripe.com/events/how-events-work",
+      "read": "2026-10-20",
+      "quote": "Because this snapshot can be stale by the time your application processes it, fetch the latest version of the resource from the API before acting on the data."
+    },
+    "connect": {
+      "value": "Connect platforms pick a scope per endpoint: Your account, or Connected accounts. Events for connected accounts carry a top-level 'account' property. Production Connect endpoints receive both live and test webhooks (check livemode). Sandbox accounts need separate endpoints.",
+      "source_url": "https://docs.stripe.com/connect/webhooks",
+      "read": "2026-10-20",
+      "quote": "Each event for a connected account contains a top-level account property that identifies the connected account."
+    },
+    "connect_livemode": {
+      "value": "Production Connect URLs receive live and test events.",
+      "source_url": "https://docs.stripe.com/connect/webhooks",
+      "read": "2026-10-20",
+      "quote": "your development webhook URLs receive only test webhooks, but your production webhook URLs receive both live and test webhooks."
+    },
+    "connect_api_flag": {
+      "value": "Webhook endpoint API 'connect' parameter: false for your account, true for connected accounts.",
+      "source_url": "https://docs.stripe.com/connect/webhooks",
+      "read": "2026-10-20",
+      "quote": "assign the scope by setting the connect parameter to false (for Your account) or true (for Connected accounts)."
+    },
+    "api_version_of_events": {
+      "value": "The API version in account settings when the event occurs (or the destination version for snapshot destinations) determines event structure; existing events do not change.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "The API version in your account settings when the event occurs dictates the API version, and therefore the structure of an Event sent to your destination."
+    }
+  },
+  "gotchas": [
+    {
+      "value": "Do not manipulate the raw body.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Any manipulation to the raw body of the request causes the verification to fail."
+    },
+    {
+      "value": "With Express, the JSON body parser must come after the webhook route.",
+      "source_url": "https://docs.stripe.com/events/manage-webhook-endpoints",
+      "read": "2026-10-20",
+      "quote": "Express applies middleware in order; if express.json() runs first, it parses the body before signature verification."
+    },
+    {
+      "value": "Redirects count as failures; register the final URL.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "We consider redirect responses to webhook requests as failures."
+    },
+    {
+      "value": "Webhook route must be exempt from CSRF protection in frameworks such as Rails or Django.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "you might need to exempt the webhooks route from CSRF protection."
+    },
+    {
+      "value": "Ignore every signature scheme other than v1 (test events also carry a fake v0).",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "To aid with testing, Stripe sends an additional signature with a fake v0 scheme, for test events."
+    },
+    {
+      "value": "Using the wrong secret is the most common signature failure; the CLI secret differs from the Dashboard secret, and test and live secrets differ.",
+      "source_url": "https://docs.stripe.com/events/manage-webhook-endpoints",
+      "read": "2026-10-20",
+      "quote": "The most common cause is using the wrong endpoint secret."
+    },
+    {
+      "value": "Process asynchronously: spikes (for example month-start renewals) can overwhelm synchronous handlers.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Configure your handler to process incoming events with an asynchronous queue."
+    },
+    {
+      "value": "Subscribe only to the event types you need.",
+      "source_url": "https://docs.stripe.com/webhooks",
+      "read": "2026-10-20",
+      "quote": "Configure your webhook endpoints to receive only the types of events required by your integration."
+    },
+    {
+      "value": "Selection-required event types are only generated when a webhook explicitly listens for them; an all-events endpoint does not trigger them.",
+      "source_url": "https://docs.stripe.com/api/events/types",
+      "read": "2026-10-20",
+      "quote": "A webhook set to listen to all events doesn't satisfy this requirement"
+    },
+    {
+      "value": "Stripe may fail to generate an event (rare); the health event v2.core.health.event_generation_failure.resolved is sent, and you should poll the resource.",
+      "source_url": "https://docs.stripe.com/events/manage-webhook-endpoints",
+      "read": "2026-10-20",
+      "quote": "In rare cases, Stripe can fail to generate an Event object."
+    }
+  ],
+  "conflicts": [],
+  "unreadable": []
+}

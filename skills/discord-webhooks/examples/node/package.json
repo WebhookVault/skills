@@ -1,0 +1,9 @@
+{
+  "name": "discord-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads Discord Webhook Events and Interactions endpoint requests (Ed25519); tested against openssl-made vectors.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

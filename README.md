@@ -36,6 +36,27 @@ General webhook engineering, for any sender and any receiver, no WebhookVault ne
 
 Claude Code installs the general skills with `/plugin install webhook-engineering@webhookvault-skills`.
 
+One skill per sender, each with its signature scheme, events, retries and pitfalls. Every fact names the
+sender's page it came from, the date it was read and the sentence that says it, and each skill has tested
+Node.js, Python and C# handlers:
+
+| Skill | Signature |
+|---|---|
+| [stripe-webhooks](skills/stripe-webhooks/SKILL.md) | `Stripe-Signature`, HMAC-SHA256 over timestamp and body |
+| [github-webhooks](skills/github-webhooks/SKILL.md) | `X-Hub-Signature-256`, HMAC-SHA256 over the body |
+| [shopify-webhooks](skills/shopify-webhooks/SKILL.md) | `X-Shopify-Hmac-Sha256`, base64 HMAC-SHA256 over the body |
+| [slack-webhooks](skills/slack-webhooks/SKILL.md) | `X-Slack-Signature`, HMAC-SHA256 over version, timestamp and body |
+| [twilio-webhooks](skills/twilio-webhooks/SKILL.md) | `X-Twilio-Signature`, HMAC-SHA1 over the URL and parameters |
+| [sendgrid-webhooks](skills/sendgrid-webhooks/SKILL.md) | ECDSA over timestamp and body |
+| [resend-webhooks](skills/resend-webhooks/SKILL.md) | Standard Webhooks (`svix-*` headers) |
+| [paddle-webhooks](skills/paddle-webhooks/SKILL.md) | `Paddle-Signature`, HMAC-SHA256 over timestamp and body |
+| [paypal-webhooks](skills/paypal-webhooks/SKILL.md) | RSA certificate signature over ids, time and CRC-32 |
+| [discord-webhooks](skills/discord-webhooks/SKILL.md) | Ed25519 over timestamp and body |
+| [lemonsqueezy-webhooks](skills/lemonsqueezy-webhooks/SKILL.md) | `X-Signature`, HMAC-SHA256 over the body |
+| [woocommerce-webhooks](skills/woocommerce-webhooks/SKILL.md) | `X-WC-Webhook-Signature`, base64 HMAC-SHA256 over the body |
+
+Claude Code installs them with `/plugin install webhook-providers@webhookvault-skills`.
+
 ## What the skills need
 
 - **The MCP server** for most of the skills: `https://mcp.webhookvault.net`, connected with an
@@ -88,7 +109,7 @@ Webhook payloads are written by whoever sends them, so a payload can hold text a
 assistant. Every skill that reads captured data tells the assistant to treat it as data, never as
 instructions, never to ask for secrets, and to ask before any change. The WebhookVault MCP server
 returns third-party text under a field named `untrusted`, redacts credentials and masks card
-numbers. Report a skill that gets this wrong to security@webhookvault.net (see
+numbers. Report a skill that gets this wrong to support@webhookvault.net (see
 [SECURITY.md](SECURITY.md)).
 
 ## Links

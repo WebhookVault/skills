@@ -1,0 +1,9 @@
+{
+  "name": "resend-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads Resend webhooks (Svix, Standard Webhooks); tested against openssl-made vectors.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

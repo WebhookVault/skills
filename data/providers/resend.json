@@ -1,0 +1,323 @@
+{
+  "slug": "resend",
+  "name": "Resend",
+  "domains": [
+    "resend.com",
+    "github.com/resend/",
+    "raw.githubusercontent.com/resend/",
+    "github.com/standard-webhooks/"
+  ],
+  "docs_home": "https://resend.com/docs/webhooks/introduction",
+  "signature": {
+    "header": {
+      "value": "svix-id, svix-timestamp and svix-signature",
+      "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+      "read": "2026-10-20",
+      "quote": "'svix-id': 'msg_p5jXN8AQM9LWM0D4loKWxJek', 'svix-timestamp': '1614265330', 'svix-signature': 'v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE='",
+      "short": "svix-signature, with svix-id and svix-timestamp"
+    },
+    "scheme": {
+      "value": "HMAC-SHA256, base64, each signature prefixed v1, (Resend's docs pages name no algorithm and point to the Svix libraries; this is from Resend's official Python SDK)",
+      "source_url": "https://github.com/resend/resend-python/blob/main/resend/webhooks/_webhooks.py",
+      "read": "2026-10-20",
+      "quote": "Verify validates a webhook payload using HMAC-SHA256 signature verification.",
+      "short": "HMAC-SHA256, base64, v1, prefix (Standard Webhooks)"
+    },
+    "signed_content": {
+      "value": "{svix-id}.{svix-timestamp}.{raw body}. Resend's docs pages do not spell it out; Resend's official Python SDK builds exactly this string, which is the Standard Webhooks construction.",
+      "source_url": "https://github.com/resend/resend-python/blob/main/resend/webhooks/_webhooks.py",
+      "read": "2026-10-20",
+      "quote": "signed_content = f\"{headers['id']}.{headers['timestamp']}.{options['payload']}\"",
+      "short": "{svix-id}.{svix-timestamp}.{raw body}"
+    },
+    "signed_content_spec_crosscheck": {
+      "value": "Standard Webhooks spec defines the same construction: msg_id.timestamp.payload. Note the spec's own header names are webhook-id, webhook-timestamp, webhook-signature; Resend documents the svix-* names only.",
+      "source_url": "https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md",
+      "read": "2026-10-20",
+      "quote": "The content to be signed is therefore: `msg_id.timestamp.payload`."
+    },
+    "header_format": {
+      "value": "svix-signature is a space-separated list of entries, each 'v1,<base64 signature>'; a receiver should try each entry until one matches. svix-timestamp is integer unix seconds. svix-id is a msg_ identifier.",
+      "source_url": "https://github.com/resend/resend-python/blob/main/resend/webhooks/_webhooks.py",
+      "read": "2026-10-20",
+      "quote": "The signature header contains space-separated signatures with version prefixes"
+    },
+    "secret_source": {
+      "value": "Signing secret is shown on the webhook details page in the dashboard, and also returned in the response body of the create, retrieve and list webhook API calls. Starts with whsec_; the part after the prefix is base64 decoded to get the HMAC key (official resend-python SDK).",
+      "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+      "read": "2026-10-20",
+      "quote": "You can find the signing secret on the webhook details page.",
+      "short": "Webhook details page in the dashboard (whsec_...)"
+    },
+    "secret_key_decoding": {
+      "value": "strip the whsec_ prefix, then base64 decode the remainder; use the decoded bytes as the HMAC key",
+      "source_url": "https://github.com/resend/resend-python/blob/main/resend/webhooks/_webhooks.py",
+      "read": "2026-10-20",
+      "quote": "Decode the signing secret (strip whsec_ prefix and base64 decode)"
+    },
+    "secret_scope": {
+      "value": "per webhook endpoint",
+      "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+      "read": "2026-10-20",
+      "quote": "each webhook and its metadata are signed with a unique key specific to the endpoint."
+    },
+    "timestamp_tolerance": {
+      "value": "Resend's docs pages state none. Resend's official Python SDK refuses a timestamp more than 300 seconds from now, in either direction.",
+      "source_url": "https://github.com/resend/resend-python/blob/main/resend/webhooks/_webhooks.py",
+      "read": "2026-10-20",
+      "quote": "DEFAULT_WEBHOOK_TOLERANCE_SECONDS = 300",
+      "short": "Five minutes either way (Resend's SDK)"
+    },
+    "rotation": {
+      "value": "not stated by the provider",
+      "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "raw_body_note": {
+      "value": "Use the raw request body; parsing then re-stringifying breaks verification.",
+      "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+      "read": "2026-10-20",
+      "quote": "Make sure that you're using the raw request body when verifying webhooks. The cryptographic signature is sensitive to even the slightest change."
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "resend.webhooks.verify({ payload, headers: { id, timestamp, signature }, webhookSecret })  (throws if invalid, otherwise returns the parsed payload object; payload is the raw string body)",
+        "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+        "read": "2026-10-20",
+        "quote": "Throws an error if the webhook is invalid // Otherwise, returns the parsed payload object const result = resend.webhooks.verify({"
+      },
+      "python": {
+        "value": "Webhooks.verify(options) in Resend's Python SDK (resend/webhooks/_webhooks.py): options carry payload (the raw body), headers (id, timestamp and signature from the svix-* headers) and webhook_secret. Raises an error when the signature does not verify.",
+        "source_url": "https://github.com/resend/resend-python/blob/main/resend/webhooks/_webhooks.py",
+        "read": "2026-10-20",
+        "quote": "headers: The Svix headers (svix-id, svix-timestamp, svix-signature)"
+      },
+      "dotnet": {
+        "value": "not stated by the provider (Resend's page offers the Svix libraries as the manual alternative)",
+        "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+        "read": "2026-10-20",
+        "quote": "Alternatively, you can manually use the Svix libraries and manually pass it the headers, body, and webhook secret."
+      }
+    },
+    "published_test_vector": null
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "HTTPS POST with a JSON payload. Content-Type header value not stated by the provider.",
+      "source_url": "https://resend.com/docs/webhooks/introduction",
+      "read": "2026-10-20",
+      "quote": "Create a route that can accept POST requests. This route will listen for and receive events from Resend."
+    },
+    "event_type_location": {
+      "value": "top-level JSON field 'type' (for example email.bounced); top-level 'created_at' is the event time; the details are in 'data'",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "\"type\": \"email.bounced\", \"created_at\": \"2026-11-22T23:41:12.126Z\", \"data\": {",
+      "short": "type (top level), for example email.bounced"
+    },
+    "delivery_id": {
+      "value": "svix-id header; retries keep the same svix-id, so dedupe on it. (No event id inside the JSON body in the examples read.)",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "use the `svix-id` header included with every webhook request. This is a unique identifier for each event delivery. Store processed `svix-id` values and skip any duplicates.",
+      "short": "svix-id header (the same on retries)"
+    },
+    "handshake": {
+      "value": "not stated by the provider",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "None"
+    },
+    "batching": {
+      "value": "not stated by the provider (the examples show one event per request)",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "The webhook will send a JSON payload to your endpoint with the event details."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "HTTP 200 (the docs say 200 OK; the retry FAQ says retries happen when Resend does not receive a 200). Other 2xx not addressed.",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "respond with an `HTTP 200 OK` to signal to Resend that the event was successfully delivered.",
+      "short": "200"
+    },
+    "response_deadline": {
+      "value": "not stated by the provider",
+      "source_url": "https://resend.com/docs/webhooks/retries-and-replays",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "Not stated"
+    },
+    "retries": {
+      "value": "8 attempts in total on an exponential schedule, each wait counted from the failure of the previous attempt: immediately, 5 seconds, 5 minutes, 30 minutes, 2 hours, 5 hours, 10 hours, 10 hours. Next retry time is visible in the dashboard message details.",
+      "source_url": "https://resend.com/docs/webhooks/retries-and-replays",
+      "read": "2026-10-20",
+      "quote": "Immediately * 5 seconds * 5 minutes * 30 minutes * 2 hours * 5 hours * 10 hours * 10 hours (in addition to the previous)",
+      "short": "8 attempts: at once, then 5 s, 5 min, 30 min, 2 h, 5 h, 10 h, 10 h"
+    },
+    "disabling": {
+      "value": "Yes: a repeatedly failing endpoint is disabled automatically and the team is emailed; it can be re-enabled from the Webhooks page. The failure threshold is not stated.",
+      "source_url": "https://resend.com/docs/webhooks/retries-and-replays",
+      "read": "2026-10-20",
+      "quote": "If a webhook endpoint keeps failing to receive events, Resend disables it automatically and sends an email notification to your team."
+    },
+    "ordering": {
+      "value": "Not guaranteed; sort by the created_at timestamp in the event payload.",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "delivery order is not guaranteed."
+    },
+    "duplicates": {
+      "value": "At-least-once delivery; duplicates possible in rare cases; dedupe on svix-id.",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "Resend webhooks provide at-least-once delivery. Every event will be delivered to your endpoint at least once, but may be delivered more than once in rare cases"
+    }
+  },
+  "events": {
+    "full_list_url": "https://resend.com/docs/webhooks/event-types",
+    "common": [
+      {
+        "value": "email.sent",
+        "meaning": "the send API request was accepted",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the API request was successful."
+      },
+      {
+        "value": "email.delivered",
+        "meaning": "recipient's mail server accepted the message",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever Resend successfully delivered the email to the recipient's mail server."
+      },
+      {
+        "value": "email.delivery_delayed",
+        "meaning": "temporary delivery problem, delivery still being attempted",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the email couldn't be delivered due to a temporary issue."
+      },
+      {
+        "value": "email.bounced",
+        "meaning": "permanent rejection by the recipient's server; remove the address",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the recipient's mail server permanently rejected the email."
+      },
+      {
+        "value": "email.complained",
+        "meaning": "delivered, then the recipient marked it as spam",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the email was successfully delivered, but the recipient marked it as spam."
+      },
+      {
+        "value": "email.opened",
+        "meaning": "recipient opened the email",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the recipient opened the email."
+      },
+      {
+        "value": "email.clicked",
+        "meaning": "recipient clicked a link",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the recipient clicks on an email link."
+      },
+      {
+        "value": "email.failed",
+        "meaning": "sending failed before delivery (invalid recipient, API key, domain, quota)",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever the email failed to send due to an error."
+      },
+      {
+        "value": "email.received",
+        "meaning": "an inbound email arrived",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever Resend successfully receives an email."
+      },
+      {
+        "value": "domain.updated",
+        "meaning": "a sending domain changed (for example verification status)",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs when a domain was successfully updated."
+      },
+      {
+        "value": "contact.created",
+        "meaning": "an audience contact was created",
+        "source_url": "https://resend.com/docs/webhooks/event-types",
+        "read": "2026-10-20",
+        "quote": "Occurs whenever a contact was successfully created."
+      }
+    ],
+    "note": "Also listed on the event types page: email.scheduled, email.suppressed, domain.created, domain.deleted, contact.updated, contact.deleted, contact.topics.updated, suppression.added, suppression.removed, topic.*, inbox.* (private beta)"
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "Dashboard Webhooks page (resend.com/webhooks), Add Webhook, enter a publicly accessible HTTPS URL and select events; or the create webhook API / SDKs / CLI (resend.webhooks.create with endpoint and events).",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "Navigate to the Webhooks page, then select Add Webhook. 1. Add your publicly accessible HTTPS URL 2. Select all events you want to observe"
+    },
+    "test_tools": {
+      "value": "Trigger a real event (send an email, create a contact or a domain), and replay any webhook message, failed or succeeded, from the dashboard.",
+      "source_url": "https://resend.com/docs/webhooks/retries-and-replays",
+      "read": "2026-10-20",
+      "quote": "You can replay both `failed` and `succeeded` webhook messages."
+    },
+    "ip_allowlist": {
+      "value": [
+        "44.228.126.217",
+        "50.112.21.217",
+        "52.24.126.164",
+        "54.148.139.208",
+        "2600:1f24:64:8000::/52"
+      ],
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "If your server requires an allowlist, our webhooks come from the following IP addresses: 44.228.126.217 50.112.21.217 52.24.126.164 54.148.139.208 2600:1f24:64:8000::/52"
+    }
+  },
+  "gotchas": [
+    {
+      "value": "Frameworks that parse the body as JSON and re-stringify it break verification; use the raw body.",
+      "source_url": "https://resend.com/docs/webhooks/verify-webhooks-requests",
+      "read": "2026-10-20",
+      "quote": "Some frameworks parse the request as JSON and then stringify it, and this will also break the signature verification."
+    },
+    {
+      "value": "Events can arrive out of order (for example opened before delivered); use created_at to sort.",
+      "source_url": "https://resend.com/docs/webhooks/create-webhook",
+      "read": "2026-10-20",
+      "quote": "an `email.opened` event could arrive before the `email.delivered` event for the same email."
+    },
+    {
+      "value": "Inbox events carry objects loaded at send time, not at change time, so two quick changes can both show the second state; email and draft objects omit html and text, fetch from the API.",
+      "source_url": "https://resend.com/docs/webhooks/event-types",
+      "read": "2026-10-20",
+      "quote": "The `thread`, `email`, `draft` and `inbox` objects are loaded when the webhook is sent, not when the change happened, so two quick changes can both show the second state."
+    },
+    {
+      "value": "Removed or disabled endpoints stop receiving delivery attempts, including pending retries.",
+      "source_url": "https://resend.com/docs/webhooks/retries-and-replays",
+      "read": "2026-10-20",
+      "quote": "If an endpoint is removed or disabled, delivery attempts to the endpoint will be disabled as well."
+    }
+  ],
+  "conflicts": [],
+  "unreadable": [
+    {
+      "url": "https://docs.svix.com/receiving/verifying-payloads/how",
+      "why": "linked from Resend's verification page; another company's documentation, so not used as a source"
+    }
+  ]
+}

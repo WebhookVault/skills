@@ -1,0 +1,9 @@
+{
+  "name": "sendgrid-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads SendGrid signed Event Webhook batches; tested against openssl-made vectors.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

@@ -11,6 +11,7 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runProviderFacts } from "./provider-facts.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillsDir = join(root, "skills");
@@ -262,6 +263,9 @@ for (const f of ["README.md", "CONTRIBUTING.md", "AGENTS.md", "SECURITY.md", "CH
 }
 
 checkMarketplace(skillNames);
+
+// Provider skills: every fact well formed and sourced, and the generated parts current.
+for (const e of runProviderFacts()) errors.push(e);
 
 for (const w of warnings) console.log(`warning  ${w}`);
 for (const e of errors) console.log(`error    ${e}`);

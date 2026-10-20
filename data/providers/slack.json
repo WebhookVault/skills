@@ -1,0 +1,353 @@
+{
+  "slug": "slack",
+  "name": "Slack",
+  "domains": [
+    "docs.slack.dev",
+    "api.slack.com"
+  ],
+  "docs_home": "https://docs.slack.dev/apis/events-api/",
+  "signature": {
+    "header": {
+      "value": "X-Slack-Signature (signature) and X-Slack-Request-Timestamp (timestamp)",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "On each HTTP request that Slack sends, Slack adds an X-Slack-Signature HTTP header (or x-slack-signature",
+      "short": "X-Slack-Signature, with X-Slack-Request-Timestamp"
+    },
+    "scheme": {
+      "value": "HMAC-SHA256 keyed with the app Signing Secret (used as a plain UTF-8 string), hex digest, prefixed with the literal v0=",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "The full signature is formed by prefixing the hex digest with v0=, to make 'v0=a2114d57b48eac39b9ad189dd8316235a7b4a8d21a10bd27519666489c69b503'.",
+      "short": "HMAC-SHA256, hex, prefixed v0="
+    },
+    "signed_content": {
+      "value": "The base string: the version v0, a colon, the value of X-Slack-Request-Timestamp, a colon, then the raw request body, i.e. v0:{timestamp}:{raw_body}",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "Concatenate the version number, the timestamp, and the request body together, using a colon ( : ) as a delimiter.",
+      "short": "v0:{timestamp}:{raw body}"
+    },
+    "header_format": {
+      "value": "Single signature, form v0=<64 hex chars>. The page says header names are meant to be case-insensitive, so do not assume letter case.",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "header names are meant to be case-insensitive, so the letter case should not be assumed"
+    },
+    "secret_source": {
+      "value": "App Signing Secret, in the app admin panel under Basic Info (Basic Information)",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "Grab your Slack Signing Secret, available in the app admin panel under Basic Info.",
+      "short": "Signing Secret, app settings > Basic Information"
+    },
+    "secret_scope": {
+      "value": "Per app (Slack creates a unique string for your app)",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "Slack creates a unique string for your app and shares it with you."
+    },
+    "timestamp_tolerance": {
+      "value": "Five minutes: reject if the timestamp differs from local time by more than five minutes (the page's pseudocode uses 60 * 5 seconds)",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "In this example, we verify that the timestamp does not differ from local time by more than five minutes.",
+      "short": "Five minutes either way (Slack's example)"
+    },
+    "rotation": {
+      "value": "Regenerate button next to the Signing Secret in the admin panel. The page does not describe dual signatures or a grace period.",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "Regenerate your secret using the \"Regenerate\" button next to the Signing Secret in the admin panel."
+    },
+    "raw_body_note": {
+      "value": "Use the raw request body, before it has been deserialized from JSON or other forms.",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "Use the raw request body, without headers, before it has been deserialized from JSON or other forms"
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "Bolt for JavaScript has built-in signing-secret verification (initialise with process.env.SLACK_SIGNING_SECRET). The page also shows createMessageAdapter(process.env.SLACK_SIGNING_SECRET) for interactions. No standalone verify function is shown.",
+        "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+        "read": "2026-10-20",
+        "quote": "const interactions = createMessageAdapter(process.env.SLACK_SIGNING_SECRET);"
+      },
+      "python": {
+        "value": "Bolt for Python has built-in signing-secret verification. No standalone verify function is shown.",
+        "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+        "read": "2026-10-20",
+        "quote": "Built-in support in Bolt for Python"
+      },
+      "dotnet": {
+        "value": "not stated by the provider (the page lists Bolt for JavaScript, Python and Java)",
+        "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+        "read": "2026-10-20",
+        "quote": "Built-in support in Bolt for Java"
+      }
+    },
+    "published_test_vector": {
+      "value": {
+        "note": "The page's worked example is a slash command (form-encoded body). Recomputed with HMAC-SHA256 during research: it matches.",
+        "signing_secret": "8f742231b10e8888abcd99yyyzzz85a5",
+        "timestamp": "1531420618",
+        "body": "token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c",
+        "signature": "v0=a2114d57b48eac39b9ad189dd8316235a7b4a8d21a10bd27519666489c69b503"
+      },
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "In this example, the Signing Secret is 8f742231b10e8888abcd99yyyzzz85a5."
+    }
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "Events API: HTTP POST with Content-Type application/json. Interactivity (buttons, shortcuts, modals): HTTP POST, application/x-www-form-urlencoded, with a payload parameter holding JSON.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "we'll send an HTTP POST request to your request URL. The event will be in the Content-Type: application/json format"
+    },
+    "interactive_payload_format": {
+      "value": "application/x-www-form-urlencoded body with a payload field that must be parsed as JSON; every structure has a type field",
+      "source_url": "https://docs.slack.dev/interactivity/handling-user-interaction/",
+      "read": "2026-10-20",
+      "quote": "They'll be sent to your specified Request URL in an HTTP POST request in the form application/x-www-form-urlencoded."
+    },
+    "interactive_payload_parse": {
+      "value": "The body contains a payload parameter; parse it as JSON",
+      "source_url": "https://docs.slack.dev/interactivity/handling-user-interaction/",
+      "read": "2026-10-20",
+      "quote": "The body of the request will contain a payload parameter; your app should parse this payload parameter as JSON."
+    },
+    "event_type_location": {
+      "value": "Outer envelope: top-level type (event_callback, or url_verification during setup). Event name: event.type inside the envelope.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Typically, that is event_callback. You may encounter url_verification during the configuration process.",
+      "short": "event.type (the top-level type is event_callback or url_verification)"
+    },
+    "event_type_inner": {
+      "value": "event.type, e.g. reaction_added, message.channels, team_join",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "The specific name of the event described by its adjacent fields."
+    },
+    "delivery_id": {
+      "value": "event_id, a string at the top level of the envelope (for example Ev123ABC456), with event_time in epoch seconds",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "\"event_id\" : \"Ev123ABC456\" , \"event_time\" : 1234567890",
+      "short": "event_id (top level)"
+    },
+    "handshake": {
+      "value": "url_verification: Slack POSTs JSON {token, challenge, type: url_verification}. Respond HTTP 200 with the challenge value, either as the raw challenge string, or as application/x-www-form-urlencoded challenge=..., or as JSON {\"challenge\": \"...\"}. The request URL must be confirmed before the form can be saved.",
+      "source_url": "https://docs.slack.dev/apis/events-api/using-http-request-urls/",
+      "read": "2026-10-20",
+      "quote": "Once you receive the event, complete the sequence by responding with HTTP 200 and the challenge attribute value.",
+      "short": "url_verification: answer 200 with the challenge value"
+    },
+    "handshake_payload": {
+      "value": "{\"token\": \"Jhj5dZrVaK7ZwHHjRyZWjbDl\", \"challenge\": \"3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P\", \"type\": \"url_verification\"}",
+      "source_url": "https://docs.slack.dev/reference/events/url_verification/",
+      "read": "2026-10-20",
+      "quote": "\"challenge\" : \"3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P\" , \"type\" : \"url_verification\""
+    },
+    "batching": {
+      "value": "One event per request",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Your request URL will receive a request for each event matching your subscriptions. One request, one event."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "Any HTTP 2xx for Events API requests; HTTP 200 OK for interaction payloads",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Your app should respond to the event request with an HTTP 2xx within three seconds.",
+      "short": "2xx (interactions: 200)"
+    },
+    "interaction_ack": {
+      "value": "HTTP 200 OK within 3 seconds; otherwise the Slack user sees an error",
+      "source_url": "https://docs.slack.dev/interactivity/handling-user-interaction/",
+      "read": "2026-10-20",
+      "quote": "your app must reply to the HTTP POST request with an HTTP 200 OK response. This must be sent within 3 seconds of receiving the payload."
+    },
+    "response_deadline": {
+      "value": "3 seconds: an Events API request not answered with a 2xx within three seconds counts as a failed attempt",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Your app should respond to the event request with an HTTP 2xx within three seconds.",
+      "short": "3 seconds"
+    },
+    "retries": {
+      "value": "Up to 3 retries: first nearly immediately, second after 1 minute, third and final after 5 minutes. Header x-slack-retry-num is 1, 2 or 3. Header x-slack-retry-reason is one of http_timeout, too_many_redirects (more than 2 redirects), ssl_error, unknown_error. Retries count against the failure limits. Optional Delayed Events setting adds hourly retries for 24 hours; by default an event more than two hours late is not delivered.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "The first retry will be sent nearly immediately. The second retry will be attempted after 1 minute. The third and final retry will be sent after 5 minutes.",
+      "short": "3 retries: almost at once, after 1 minute, after 5 minutes (opt-in hourly for 24 hours)"
+    },
+    "retry_headers": {
+      "value": "x-slack-retry-num (1, 2 or 3) and x-slack-retry-reason (http_timeout, too_many_redirects, ssl_error, unknown_error)",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "With each retry attempt, you'll also be given a x-slack-retry-num HTTP header indicating the attempt number: 1, 2, or 3."
+    },
+    "retry_opt_out": {
+      "value": "Send header x-slack-no-retry: 1 on a non-200 response to stop redelivery of that specific event",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "x-slack-no-retry: 1"
+    },
+    "delayed_events": {
+      "value": "Optional Delayed Events setting: three quick retries followed by hourly retries for 24 hours; default drops events more than two hours late",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Enable the Delayed Events feature for Slack to follow those three retries with hourly retries for 24 hours."
+    },
+    "disabling": {
+      "value": "Event subscriptions are temporarily disabled when failure conditions affect more than 95% of delivery attempts within 60 minutes. Apps receiving fewer than 1,000 events per hour are not auto-disabled. Re-enable via app management.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "When your application enters any combination of these failure conditions for more than 95% of delivery attempts within 60 minutes, your application's event subscriptions will be temporarily disabled"
+    },
+    "disabling_threshold_note": {
+      "value": "Keep a success response rate of at least 5% of events per 60 minutes; apps below 1,000 events per hour are exempt",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "However, apps receiving less than 1,000 events per hour will not be automatically disabled."
+    },
+    "ordering": {
+      "value": "not stated by the provider (the page calls the Events API best-effort and says delivery can be delayed during incidents)",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "The Events API is a best-effort system, and event delivery could be delayed during incidents."
+    },
+    "duplicates": {
+      "value": "Not stated as a guarantee either way. A retried event is sent again with x-slack-retry-num set to the attempt number.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "With each retry attempt, you'll also be given a x-slack-retry-num HTTP header indicating the attempt number: 1, 2, or 3."
+    }
+  },
+  "events": {
+    "full_list_url": "https://docs.slack.dev/reference/events/",
+    "common": [
+      {
+        "value": "message",
+        "meaning": "A message was posted in a channel the app can see (message.channels etc. variants exist)",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "A message was sent to a channel"
+      },
+      {
+        "value": "app_mention",
+        "meaning": "A message mentioned the app",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "Subscribe to only the message events that mention your app or bot"
+      },
+      {
+        "value": "app_home_opened",
+        "meaning": "A user opened the app's Home tab",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "User clicked into your App Home"
+      },
+      {
+        "value": "member_joined_channel",
+        "meaning": "A user joined a channel",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "A user joined a public channel, private channel or MPDM"
+      },
+      {
+        "value": "reaction_added",
+        "meaning": "An emoji reaction was added to an item",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "A member has added an emoji reaction to an item"
+      },
+      {
+        "value": "channel_created",
+        "meaning": "A channel was created",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "A channel was created"
+      },
+      {
+        "value": "team_join",
+        "meaning": "A new member joined the workspace",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "A new member has joined"
+      },
+      {
+        "value": "url_verification",
+        "meaning": "Setup-time ownership challenge, not a real event",
+        "source_url": "https://docs.slack.dev/reference/events/",
+        "read": "2026-10-20",
+        "quote": "Verifies ownership of an Events API Request URL"
+      }
+    ]
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "App settings, Event Subscriptions (toggle on), then the Request URL; the URL must pass the url_verification challenge before the form saves. Interactivity has its own Request URL.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "find the Event Subscriptions setting and use the toggle to turn it on."
+    },
+    "url_confirmation": {
+      "value": "Request URL must be confirmed before saving; a Retry button re-attempts verification after a timeout; request URLs are case-sensitive",
+      "source_url": "https://docs.slack.dev/apis/events-api/using-http-request-urls/",
+      "read": "2026-10-20",
+      "quote": "Your Event request URL must be confirmed before saving this form."
+    },
+    "test_tools": {
+      "value": "not stated by the provider (the pages read mention only the Retry button for URL verification)",
+      "source_url": "https://docs.slack.dev/apis/events-api/using-http-request-urls/",
+      "read": "2026-10-20",
+      "quote": "use the Retry button to attempt verification again."
+    },
+    "ip_allowlist": {
+      "value": "not stated by the provider",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": ""
+    }
+  },
+  "gotchas": [
+    {
+      "value": "Event deliveries are capped at 30,000 per workspace per app per 60 minutes; beyond that app_rate_limited events are sent every minute.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Event deliveries currently max out at 30,000 per workspace/team per app per 60 minutes."
+    },
+    {
+      "value": "The top-level token field is deprecated; verify with the signing secret instead.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "Instead of using the token, you should rely on using signed secrets to verify requests from Slack."
+    },
+    {
+      "value": "Compare signatures with a constant-time HMAC compare, not direct string equality.",
+      "source_url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+      "read": "2026-10-20",
+      "quote": "use an hmac compare function instead of directly comparing the signatures for equality."
+    },
+    {
+      "value": "The Events API tolerates added fields: expect extra or conditionally present fields.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "to expect additional fields you haven't encountered before or fields that are only conditionally present."
+    },
+    {
+      "value": "If one event is visible to several installed users, Slack sends it once with a single user in authorizations.",
+      "source_url": "https://docs.slack.dev/apis/events-api/",
+      "read": "2026-10-20",
+      "quote": "we will send one event and include one user to whom this event is \"visible\" in the authorizations.user_id field."
+    }
+  ],
+  "conflicts": [],
+  "unreadable": []
+}

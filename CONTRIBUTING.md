@@ -16,10 +16,30 @@ bash tools/test-examples.sh    # every example's tests (Node.js 18+, Python 3.9+
                                # openssl 3 on PATH, and WEBHOOK_TEST_DATABASE_URL for a PostgreSQL
                                # database the database examples may create a schema in)
 claude plugin validate .       # the Claude Code marketplace manifest
+node tools/stale-facts.mjs     # provider facts read more than 90 days ago (release gate)
 ```
 
 `node tools/validate.mjs --stamp` writes `shared/safety-block.md` into every skill that drives the
 MCP server; edit the shared file, never the stamped copies.
+
+## Provider facts
+
+Every provider skill (`skills/<slug>-webhooks/`) takes its facts from `data/providers/<slug>.json`.
+Each fact there has a `value`, the `source_url` it was read from, the `read` date and the `quote` (the
+sentence on the page that says it). Sources must be on one of the provider's own hosts, listed in the
+file's `domains`. Where the provider's pages say nothing, the value is "not stated by the provider".
+
+`node tools/provider-facts.mjs --write` renders the facts into the skill's `references/facts.md` and the
+quick-facts block in its `SKILL.md`; `validate.mjs` fails when either is out of date. Change a fact in the
+JSON file and regenerate, never in the skill. `data/webhookvault-presets.json` holds what WebhookVault
+itself does for each provider and is read from WebhookVault's catalogue, with its own date.
+
+A fact is re-read on the provider's page after 90 days (`node tools/stale-facts.mjs` lists them), when
+the provider announces a change, or when someone reports a mismatch.
+
+Provider examples run the shared `examples/fixtures/vectors.json` in every language. It is made by
+`python tools/make-provider-vectors.py` with the openssl command line, never by the code under test, and
+includes the provider's own published example where its docs print one.
 
 ## Rules for a skill
 

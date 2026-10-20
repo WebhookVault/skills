@@ -1,0 +1,404 @@
+{
+  "slug": "twilio",
+  "name": "Twilio",
+  "domains": [
+    "www.twilio.com"
+  ],
+  "docs_home": "https://www.twilio.com/docs/usage/webhooks",
+  "signature": {
+    "header": {
+      "value": "X-Twilio-Signature",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Twilio signs all HTTP requests to your app with an X-Twilio-Signature HTTP header."
+    },
+    "scheme": {
+      "value": "HMAC-SHA1 keyed with the account auth token, then Base64-encoded",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "Sign the resulting string with HMAC-SHA1 using your AuthToken as the key (remember, your AuthToken's case matters!).",
+      "short": "HMAC-SHA1, base64"
+    },
+    "scheme_encoding": {
+      "value": "Base64 of the raw HMAC-SHA1 digest",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "Base64-encode the resulting hash value."
+    },
+    "signed_content": {
+      "value": "Form-encoded POST: the full request URL (scheme through end of query string, including port per the port rules below), followed by each POST parameter name and value appended with no delimiters, parameters sorted alphabetically by name (Unix-style case-sensitive order). GET: the final URL includes the parameters in the query string. JSON body (application/json): Twilio appends a bodySHA256 query parameter (hex SHA-256 of the raw body) to the URL and the signature covers the URL including it; do not treat JSON properties as form parameters.",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "Iterate through the sorted list of POST parameters, and append the variable name and value (with no delimiters) to the end of the URL string.",
+      "short": "Full URL + each POST parameter name and value, sorted by name; JSON bodies: URL with bodySHA256"
+    },
+    "signed_content_sort": {
+      "value": "Unix-style case-sensitive sorting by parameter name",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "sort all the POST parameters alphabetically (using Unix-style case-sensitive sorting order)."
+    },
+    "signed_content_json": {
+      "value": "For application/json, Twilio adds bodySHA256 to the URL; the SDK checks the body hash against it and includes it in the signature calculation",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "For these requests, Twilio appends a bodySHA256 query parameter to your webhook URL. The parameter value is a SHA-256 hash of the raw JSON request body."
+    },
+    "bodysha256_encoding": {
+      "value": "hexadecimal representation of the SHA-256 hash of the request body",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "Its value is calculated as the hexadecimal representation of the SHA-256 hash of the request body."
+    },
+    "header_format": {
+      "value": "Single header value: the Base64 signature, e.g. L/OH5YylLD5NRKLltdqwSvS0BnU=",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "Finally, compare that to the hash Twilio sent in the X-Twilio-Signature HTTP header."
+    },
+    "secret_source": {
+      "value": "The Twilio account's primary Auth Token (Console). Alternatively, the Webhooks configuration API can sign requests with a key you manage instead of the auth token.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-overview",
+      "read": "2026-10-20",
+      "quote": "Sign requests with a key you manage instead of your account authentication token.",
+      "short": "The account's primary Auth Token"
+    },
+    "secret_scope": {
+      "value": "The account's auth token (subaccounts are not discussed on the pages read)",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Twilio hashes the signature with the HMAC-SHA1 hashing algorithm using your account auth token as the secret key."
+    },
+    "timestamp_tolerance": {
+      "value": "not stated by the provider (the signature covers no timestamp, so it cannot expire)",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "None (no timestamp is signed)"
+    },
+    "rotation": {
+      "value": "Use the primary Auth Token as the key; if a secondary token was recently created, keep using the previous (primary) token until the secondary is promoted",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "If you have recently created a secondary AuthToken, you still need to use your previous AuthToken until the secondary one has been promoted to your primary AuthToken."
+    },
+    "raw_body_note": {
+      "value": "For JSON requests use the raw body string with the JSON-specific method. For form requests pass every received parameter, not a hardcoded list. Some frameworks trim whitespace in POST fields (for example Laravel TrimStrings, certain Node.js middleware), which breaks matching.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Use your SDK's JSON-specific validation method (for example, validateRequestWithBody) and pass the raw request body string."
+    },
+    "url_exactness": {
+      "value": "Pass the exact URL Twilio used, including query string and URL-encoded characters; query parameters belong in the URL, never in the params argument. Do not decode or re-encode.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "use the exact URL from Twilio including any URL-encoded characters. If you decode or re-encode the URL, signature validation fails."
+    },
+    "url_port_rules": {
+      "value": "HTTP SMS and voice callbacks and HTTPS SMS callbacks: username/password dropped, port kept. HTTPS voice callbacks: username/password dropped and port also dropped before signing.",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "For voice callbacks over HTTPS: Twilio will drop the username and password (if any) from the URL before computing the signature. Twilio will also drop the port (if any)"
+    },
+    "url_trailing_slash": {
+      "value": "A framework or server rewriting /twilio to /twilio/ gives a wrong hash because Twilio signed the URL without the trailing slash. For voice WSS handshakes, try appending a trailing / to the URL passed to the validator.",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "try appending a trailing / character to the URL that you pass to the signature validation method."
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "twilio.validateRequest(authToken, twilioSignature, url, params) for form bodies; validateRequestWithBody(authToken, twilioSignature, url, body) for JSON (the page's samples call both on the client object from require('twilio'))",
+        "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+        "read": "2026-10-20",
+        "quote": "client.validateRequest(authToken, twilioSignature, url, params)"
+      },
+      "python": {
+        "value": "from twilio.request_validator import RequestValidator; validator = RequestValidator(auth_token); validator.validate(url, params, twilio_signature). For JSON bodies the page shows validator.validate(url, body, twilio_signature).",
+        "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+        "read": "2026-10-20",
+        "quote": "from twilio.request_validator import RequestValidator"
+      },
+      "dotnet": {
+        "value": "using Twilio.Security; var validator = new RequestValidator(authToken); validator.Validate(url, parameters, twilioSignature). For JSON bodies: validator.Validate(url, body, twilioSignature).",
+        "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+        "read": "2026-10-20",
+        "quote": "using Twilio.Security;"
+      }
+    },
+    "sdk_recommendation": {
+      "value": "Twilio recommends the SDK validator and says not to implement your own",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Twilio recommends using the provided signature validation library from a Twilio SDK. Don't implement your own signature validation."
+    },
+    "published_test_vector": {
+      "value": {
+        "note": "From the Explore the algorithm yourself example (form-encoded POST). Verified by recomputing HMAC-SHA1 and Base64 locally: output equals the expected signature.",
+        "auth_token": "12345",
+        "url": "https://example.com/myapp.php?foo=1&bar=2",
+        "post_params": "Digits=1234, To=+18005551212, From=+14158675310, Caller=+14158675310, CallSid=CA1234567890ABCDE",
+        "string_to_sign": "https://example.com/myapp.php?foo=1&bar=2CallSidCA1234567890ABCDECaller+14158675310Digits1234From+14158675310To+18005551212",
+        "signature": "L/OH5YylLD5NRKLltdqwSvS0BnU="
+      },
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "Suppose your AuthToken is 12345."
+    },
+    "published_json_example": {
+      "value": {
+        "note": "Page prints a JSON example but not the auth token, so the signature cannot be reproduced. The bodySHA256 in the URL does match SHA-256 of the printed body (verified locally).",
+        "url": "https://example.com/myapp?bodySHA256=5ccde7145dfb8f56479710896586cb9d5911809d83afbe34627818790db0aec9",
+        "body": "{\"CallSid\":\"CA1234567890ABCDE\",\"Caller\":\"+12349013030\"}",
+        "signature": "hqeF3G9Hrnv6/R0jOhoYDD2PPUs="
+      },
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "const body = '{\"CallSid\":\"CA1234567890ABCDE\",\"Caller\":\"+12349013030\"}'"
+    }
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "Inbound SMS: HTTP POST, application/x-www-form-urlencoded. Voice: GET or POST expecting TwiML. JSON payloads with application/json also exist for some webhooks.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-faq",
+      "read": "2026-10-20",
+      "quote": "For inbound text messages, Twilio will send an HTTP POST request to your server with a body that uses the application/x-www-form-urlencoded encoding."
+    },
+    "event_type_location": {
+      "value": "Varies by product. For messaging status callbacks the MessageStatus form parameter carries the status; there is no single event-type header.",
+      "source_url": "https://www.twilio.com/docs/messaging/guides/track-outbound-message-status",
+      "read": "2026-10-20",
+      "quote": "MessageStatus The status of the Message resource at the time the status callback request was sent.",
+      "short": "Per product; messaging status callbacks: MessageStatus"
+    },
+    "delivery_id": {
+      "value": "No single dedupe ID. Resource SIDs are in the body (for example MessageSid, CallSid). The connection-override retry path adds header I-Twilio-Idempotency-Token to distinguish retry attempts.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "To distinguish retry attempts, use the HTTP header I-Twilio-Idempotency-Token.",
+      "short": "No event id; resource SIDs (MessageSid, CallSid); retries carry I-Twilio-Idempotency-Token"
+    },
+    "handshake": {
+      "value": "not stated by the provider",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-overview",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "None"
+    },
+    "batching": {
+      "value": "not stated by the provider",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-overview",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "parameter_evolution": {
+      "value": "Parameters vary by channel and event type and Twilio adds new ones without notice; validation must use all received parameters.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Twilio occasionally adds parameters without advance notice."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "Informational webhooks need a standard HTTP 200 OK. Webhooks that ask for instructions (inbound SMS, voice) expect a TwiML response (some require JSON).",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/getting-started-twilio-webhooks",
+      "read": "2026-10-20",
+      "quote": "Informational Twilio webhooks require a standard HTTP 200 OK response. This shows that your web app received the webhook.",
+      "short": "200 (TwiML where the webhook asks for instructions)"
+    },
+    "twiml_expectation": {
+      "value": "Inbound SMS and voice webhooks respond with TwiML for the product",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-faq",
+      "read": "2026-10-20",
+      "quote": "If you are receiving a webhook for an inbound text message, your application would respond with TwiML for Programmable SMS."
+    },
+    "response_deadline": {
+      "value": "Defaults: connect timeout 5000 ms, read timeout 15000 ms, total time 15000 ms. Voice call-related requests have a hard upper limit of 15 seconds.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "Twilio imposes a hard upper timeout of 15 seconds on all call-related HTTP requests.",
+      "short": "15 seconds total by default (connect 5 seconds)"
+    },
+    "override_parameters": {
+      "value": "Overrides go in the URL fragment: ct (connect timeout ms, 100-10000, default 5000), rt (read timeout ms, 100-15000, default 15000), tt (total ms, 100-15000, default 15000), rc (retry count 0-5, default 1), rp (retry policy: 4xx, 5xx, ct, rt, all; default ct), sni (y/n, default y), e (edge, default ashburn). Example: https://example.com/foo#ct=500&rt=1000&tt=15000&rc=2&rp=4xx,5xx,ct,rt&sni=y&e=dublin,sydney. Documented as the legacy approach.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "https://example.com/foo#ct=500&rt=1000&tt=15000&rc=2&rp=4xx,5xx,ct,rt&sni=y&e=dublin,sydney"
+    },
+    "retries": {
+      "value": "Default is one retry (rc=1) and the default retry policy (rp=ct) retries only on TCP connect or TLS handshake failure. 4xx, 5xx and read timeout (rt) retries must be opted in via the rp override. Twilio does not retry partial responses.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "ct retries on TCP connect or TLS handshake failure.",
+      "short": "One retry, on connect or TLS failure only, unless overridden"
+    },
+    "retry_count_default": {
+      "value": "1 (range 0 to 5)",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "The number of attempts Twilio makes to retry the webhook should it fail."
+    },
+    "configuration_api": {
+      "value": "The Webhooks configuration API can set timeouts, retries and edge zones as webhook rules; Twilio recommends it over URL overrides. Its default retry behaviour is not stated on the pages read.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-overview",
+      "read": "2026-10-20",
+      "quote": "Set the timeouts, retries, and edge zones Twilio uses and can collect as webhook rules."
+    },
+    "disabling": {
+      "value": "not stated by the provider",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-overview",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "ordering": {
+      "value": "No ordering guarantee for status callbacks",
+      "source_url": "https://www.twilio.com/docs/messaging/guides/track-outbound-message-status",
+      "read": "2026-10-20",
+      "quote": "there is no guarantee that the status callback requests always arrive at your endpoint in the order they were sent."
+    },
+    "duplicates": {
+      "value": "not stated by the provider as a guarantee. A retried request carries the I-Twilio-Idempotency-Token header.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "To distinguish retry attempts, use the HTTP header I-Twilio-Idempotency-Token."
+    }
+  },
+  "events": {
+    "full_list_url": "https://www.twilio.com/docs/messaging/api/message-resource#message-status-values",
+    "note": "Twilio has no single event catalogue: each product sends its own webhooks. These are the Messaging status values sent to a StatusCallback URL, plus the inbound message status.",
+    "common": [
+      {
+        "value": "queued",
+        "meaning": "Outbound API request accepted and message queued",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "The API request to send an outbound message was successful and the message is queued to be sent out by a specific From sender."
+      },
+      {
+        "value": "sent",
+        "meaning": "Nearest upstream carrier accepted the outbound message",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "The nearest upstream carrier accepted the outbound message."
+      },
+      {
+        "value": "delivered",
+        "meaning": "Carrier (and where available the handset) confirmed delivery",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "Twilio has received confirmation of outbound message delivery from the upstream carrier"
+      },
+      {
+        "value": "undelivered",
+        "meaning": "Delivery receipt says the message was not delivered; ErrorCode set",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "Twilio received a delivery receipt indicating that the outbound message was not delivered."
+      },
+      {
+        "value": "failed",
+        "meaning": "Message failed to send; ErrorCode set",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "The outbound message failed to send."
+      },
+      {
+        "value": "read",
+        "meaning": "RCS and WhatsApp only: recipient opened the message",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "Channels supported: RCS and WhatsApp. The recipient opened the outbound message."
+      },
+      {
+        "value": "received",
+        "meaning": "Inbound message received and processing complete (inbound message webhook)",
+        "source_url": "https://www.twilio.com/docs/messaging/api/message-resource",
+        "read": "2026-10-20",
+        "quote": "The inbound message was received and processing is complete."
+      }
+    ]
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "Product-specific: Console phone number or app configuration, or API parameters named callback or statusCallback (StatusCallback for messages). Webhooks configuration API manages delivery rules by URL.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/getting-started-twilio-webhooks",
+      "read": "2026-10-20",
+      "quote": "The typical API request parameter for the webhook URL gets named callback or statusCallback."
+    },
+    "status_callback": {
+      "value": "For Twilio to send status callbacks for a message you must provide the StatusCallback URL on each message to track (or configure at Messaging Service level)",
+      "source_url": "https://www.twilio.com/docs/messaging/guides/track-outbound-message-status",
+      "read": "2026-10-20",
+      "quote": "you need to provide your status callback URL in the StatusCallback parameter of each message for which you want to track the MessageStatus."
+    },
+    "test_tools": {
+      "value": "Console Debugger lists errors Twilio hits sending webhooks; Request Inspector on each Voice call record; the Webhooks configuration API has a Test webhook delivery page",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-faq",
+      "read": "2026-10-20",
+      "quote": "The Debugger will list any errors that Twilio finds when it sends a webhook to your application."
+    },
+    "ip_allowlist": {
+      "value": "No fixed range",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Twilio not having a fixed range of IP addresses that issue webhooks."
+    }
+  },
+  "gotchas": [
+    {
+      "value": "Twilio will not connect to an HTTPS URL with a self-signed certificate.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "Twilio won't connect to an HTTPS URL with a self-signed certificate."
+    },
+    {
+      "value": "Behind a proxy the URL you reconstruct must equal the public URL configured in Twilio (scheme, host, port rules, trailing slash, encoding).",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-security",
+      "read": "2026-10-20",
+      "quote": "When making a webhook request, use the exact URL from Twilio including any URL-encoded characters."
+    },
+    {
+      "value": "For JSON requests do not use JSON properties as the validator's POST parameters.",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "don't use the JSON body to fill in the validator's parameter for POST parameters."
+    },
+    {
+      "value": "Message status callbacks may arrive out of order.",
+      "source_url": "https://www.twilio.com/docs/messaging/guides/track-outbound-message-status",
+      "read": "2026-10-20",
+      "quote": "there is no guarantee that the status callback requests always arrive at your endpoint in the order they were sent."
+    },
+    {
+      "value": "Hidden whitespace in a body built for Twilio (for example in Studio HTTP Request) can break signature matching.",
+      "source_url": "https://www.twilio.com/docs/usage/security",
+      "read": "2026-10-20",
+      "quote": "ensure that no hidden whitespaces are in the body."
+    },
+    {
+      "value": "Voice call-related requests hard-cap at 15 seconds regardless of overrides.",
+      "source_url": "https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides",
+      "read": "2026-10-20",
+      "quote": "This hard limit overrides any other overrides on call-processing requests for a good end-user calling experience."
+    }
+  ],
+  "conflicts": [
+    {
+      "topic": "Which port is signed",
+      "note": "One page states two rules: HTTPS SMS callbacks keep the port in the signed URL, HTTPS voice callbacks drop it. A receiver verifying both must know which product sent the request.",
+      "sources": [
+        {
+          "source_url": "https://www.twilio.com/docs/usage/security",
+          "read": "2026-10-20",
+          "quote": "For SMS callbacks over HTTPS: Twilio will drop the username and password (if any) from the URL before computing the signature. Twilio will keep the port (if any)"
+        },
+        {
+          "source_url": "https://www.twilio.com/docs/usage/security",
+          "read": "2026-10-20",
+          "quote": "For voice callbacks over HTTPS: Twilio will drop the username and password (if any) from the URL before computing the signature. Twilio will also drop the port (if any)"
+        }
+      ]
+    }
+  ],
+  "unreadable": []
+}

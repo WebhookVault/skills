@@ -1,0 +1,116 @@
+{
+  "about": "What WebhookVault itself does for each provider: the signature header its preset reads, where it finds the event name, the label of the secret field, and whether it checks the signature. Read from WebhookVault's provider catalogue, signature presets and sample library on the date below. These are facts about WebhookVault, not about the provider; the provider's own facts are in data/providers/<slug>.json.",
+  "read": "2026-10-20",
+  "providers": {
+    "stripe": {
+      "name": "Stripe",
+      "signatureHeader": "Stripe-Signature",
+      "eventLocations": [{ "kind": "body", "path": "type" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 hex over \"t.body\" from the t and v1 values, 5 minute tolerance",
+      "setupPath": "Developers > Webhooks > Add endpoint"
+    },
+    "github": {
+      "name": "GitHub",
+      "signatureHeader": "X-Hub-Signature-256",
+      "eventLocations": [{ "kind": "header", "path": "X-GitHub-Event" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 hex of the raw body, prefixed sha256=",
+      "setupPath": "Repository or organisation Settings > Webhooks > Add webhook (content type application/json)"
+    },
+    "shopify": {
+      "name": "Shopify",
+      "signatureHeader": "X-Shopify-Hmac-Sha256",
+      "eventLocations": [{ "kind": "header", "path": "X-Shopify-Topic" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 base64 of the raw body",
+      "setupPath": "Settings > Notifications > Webhooks > Create webhook"
+    },
+    "woocommerce": {
+      "name": "WooCommerce",
+      "signatureHeader": "X-WC-Webhook-Signature",
+      "eventLocations": [{ "kind": "header", "path": "X-WC-Webhook-Topic" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 base64 of the raw body",
+      "setupPath": "WooCommerce > Settings > Advanced > Webhooks > Add webhook"
+    },
+    "slack": {
+      "name": "Slack",
+      "signatureHeader": "X-Slack-Signature",
+      "eventLocations": [{ "kind": "body", "path": "event.type" }, { "kind": "body", "path": "type" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 hex over \"v0:timestamp:body\" with X-Slack-Request-Timestamp, prefixed v0=, 5 minute tolerance",
+      "setupPath": "api.slack.com > Your app > Event Subscriptions > Request URL",
+      "answersChallenge": true
+    },
+    "discord": {
+      "name": "Discord",
+      "signatureHeader": "X-Signature-Ed25519",
+      "eventLocations": [{ "kind": "body", "path": "event.type" }],
+      "secretLabel": "Discord application public key (hex)",
+      "verifies": true,
+      "scheme": "Ed25519 over timestamp + body from X-Signature-Ed25519 and X-Signature-Timestamp, verified with the application public key",
+      "setupPath": "Discord saves an Interactions Endpoint URL only after its signed PING check, which a capture URL cannot answer. Register your own handler there and have it relay each interaction to this URL (the Discord guide: https://webhookvault.net/providers/discord/)",
+      "answersChallenge": false
+    },
+    "twilio": {
+      "name": "Twilio",
+      "signatureHeader": "X-Twilio-Signature",
+      "eventLocations": [],
+      "secretLabel": "Auth token",
+      "verifies": true,
+      "scheme": "HMAC-SHA1 base64 over the public URL plus the sorted form parameters",
+      "setupPath": "Console > Phone Numbers > Manage > Active numbers > your number > Messaging configuration > A message comes in"
+    },
+    "sendgrid": {
+      "name": "SendGrid",
+      "signatureHeader": "X-Twilio-Email-Event-Webhook-Signature",
+      "eventLocations": [{ "kind": "body", "path": "event" }],
+      "secretLabel": "Verification public key (base64)",
+      "verifies": true,
+      "scheme": "ECDSA P-256 over timestamp + body, verified with the public key",
+      "setupPath": "Settings > Mail Settings > Event Webhook"
+    },
+    "resend": {
+      "name": "Resend",
+      "signatureHeader": "svix-signature",
+      "eventLocations": [{ "kind": "body", "path": "type" }],
+      "secretLabel": "Signing secret (whsec_...)",
+      "verifies": true,
+      "scheme": "Standard Webhooks: HMAC-SHA256 base64 over \"id.timestamp.body\" from the svix-* headers, whsec_ secret, 5 minute tolerance",
+      "setupPath": "Webhooks > Add webhook"
+    },
+    "paddle": {
+      "name": "Paddle",
+      "signatureHeader": "Paddle-Signature",
+      "eventLocations": [{ "kind": "body", "path": "event_type" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 hex over \"ts:body\" from the ts and h1 values, 5 minute tolerance",
+      "setupPath": "Paddle > Developer tools > Notifications > New destination"
+    },
+    "paypal": {
+      "name": "PayPal",
+      "signatureHeader": "PAYPAL-TRANSMISSION-SIG",
+      "eventLocations": [{ "kind": "body", "path": "event_type" }],
+      "secretLabel": "Secret",
+      "verifies": false,
+      "scheme": "Certificate-chain signature (PAYPAL-TRANSMISSION-SIG); WebhookVault does not check this scheme yet, so a capture shows the verdict as unverifiable with the scheme named",
+      "setupPath": "Developer Dashboard > Apps and Credentials > your app > Webhooks"
+    },
+    "lemonsqueezy": {
+      "name": "Lemon Squeezy",
+      "signatureHeader": "X-Signature",
+      "eventLocations": [{ "kind": "header", "path": "X-Event-Name" }],
+      "secretLabel": "Signing secret",
+      "verifies": true,
+      "scheme": "HMAC-SHA256 hex of the raw body",
+      "setupPath": "Settings > Webhooks"
+    }
+  }
+}

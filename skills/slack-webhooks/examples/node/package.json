@@ -1,0 +1,9 @@
+{
+  "name": "slack-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads Slack Events API and interactivity requests; tested against openssl-made vectors and Slack's published example.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

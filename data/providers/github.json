@@ -1,0 +1,395 @@
+{
+  "slug": "github",
+  "name": "GitHub",
+  "domains": [
+    "docs.github.com"
+  ],
+  "docs_home": "https://docs.github.com/en/webhooks",
+  "signature": {
+    "header": {
+      "value": "X-Hub-Signature-256 (the older X-Hub-Signature carries a SHA-1 HMAC for compatibility; GitHub recommends the -256 header). Both are sent only when the webhook has a secret configured.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "X-Hub-Signature is provided for compatibility with existing integrations. We recommend that you use the more secure X-Hub-Signature-256 instead.",
+      "short": "X-Hub-Signature-256 (only when a secret is set)"
+    },
+    "header_secret_required": {
+      "value": "The signature headers are only sent if a secret is configured.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "X-Hub-Signature-256: This header is sent if the webhook is configured with a secret."
+    },
+    "scheme": {
+      "value": "HMAC-SHA256, hex digest, key is the webhook secret.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "This is the HMAC hex digest of the request body, and is generated using the SHA-256 hash function and the secret as the HMAC key.",
+      "short": "HMAC-SHA256, hex, prefixed sha256="
+    },
+    "signed_content": {
+      "value": "The request body (payload contents) exactly as received; the docs say to handle it as UTF-8 and note payloads can contain unicode. The docs do not say how the signed bytes relate to the form parameter when content type is x-www-form-urlencoded: not stated by the provider.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "The hash signature is generated using your webhook's secret token and the payload contents.",
+      "short": "The raw body"
+    },
+    "header_format": {
+      "value": "Single value: the literal prefix sha256= followed by the lowercase-looking hex digest (example in the docs: sha256=757107ea...). One signature only; no timestamp element.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "GitHub uses an HMAC hex digest to compute the hash. The hash signature always starts with sha256=."
+    },
+    "secret_source": {
+      "value": "You choose the secret yourself when creating the webhook (Secret field); docs advise a random high-entropy string, stored securely and never hardcoded or committed.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks",
+      "read": "2026-10-20",
+      "quote": "You should choose a random string of text with high entropy.",
+      "short": "A secret you choose when creating the webhook"
+    },
+    "secret_storage": {
+      "value": "Keep it out of code and repositories.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "Never hardcode a token into an application or push a token to any repository."
+    },
+    "secret_scope": {
+      "value": "Set on each webhook's own configuration (repository, organization, or the single webhook of a GitHub App). The docs do not use the phrase 'per webhook' for the secret.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks",
+      "read": "2026-10-20",
+      "quote": "Each GitHub App has one webhook."
+    },
+    "timestamp_tolerance": {
+      "value": "not stated by the provider (the signature has no timestamp; replay protection is suggested via X-GitHub-Delivery uniqueness)",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "To protect against replay attacks, you can use the X-GitHub-Delivery header to ensure that each delivery is unique per event.",
+      "short": "None (no timestamp is signed)"
+    },
+    "rotation": {
+      "value": "not stated by the provider (no dual-signature or grace-period description found on the pages read)",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "raw_body_note": {
+      "value": "Verify against the body as received; treat as UTF-8. The page does not use the words 'raw body' in the summary read, only payload contents and UTF-8 handling.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "If your language and server implementation specifies a character encoding, ensure that you handle the payload as UTF-8."
+    },
+    "comparison_note": {
+      "value": "Never compare with a plain ==; use a constant-time comparison.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "Never use a plain == operator."
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "import { Webhooks } from \"@octokit/webhooks\"; const webhooks = new Webhooks({ secret }); await webhooks.verify(body, signature)  (signature taken from the x-hub-signature-256 header)",
+        "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+        "read": "2026-10-20",
+        "quote": "if (!(await webhooks.verify(body, signature)))"
+      },
+      "python": {
+        "value": "not stated by the provider as an SDK helper; the docs show a manual example using hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256) and hmac.compare_digest",
+        "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+        "read": "2026-10-20",
+        "quote": "if not hmac.compare_digest(expected_signature, signature_header):"
+      },
+      "dotnet": {
+        "value": "not stated by the provider (the page shows Ruby, Python, JavaScript and TypeScript examples only)",
+        "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+        "read": "2026-10-20",
+        "quote": ""
+      }
+    },
+    "published_test_vector": {
+      "value": {
+        "secret": "It's a Secret to Everybody",
+        "payload": "Hello, World!",
+        "signature": "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17",
+        "note": "Payload is the 13 characters Hello, World! with no newline. Recomputed during research: it matches."
+      },
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "secret: It's a Secret to Everybody payload: Hello, World! If your implementation is correct, the signatures that you generate should match the following signature values: signature: 757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17 X-Hub-Signature-256: sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17"
+    }
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "HTTP POST. Content type chosen when the webhook is created: application/json (JSON as the raw body) or application/x-www-form-urlencoded (JSON sent as a form parameter called payload).",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks",
+      "read": "2026-10-20",
+      "quote": "application/json will deliver the JSON payload directly as the body of the POST request."
+    },
+    "content_type_form": {
+      "value": "Form encoding wraps the JSON in a field named payload.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks",
+      "read": "2026-10-20",
+      "quote": "application/x-www-form-urlencoded will send the JSON payload as a form parameter called payload."
+    },
+    "user_agent": {
+      "value": "User-Agent always starts GitHub-Hookshot/",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "This header will always have the prefix GitHub-Hookshot/."
+    },
+    "event_type_location": {
+      "value": "X-GitHub-Event request header. Many events also have an 'action' field in the body, so check both.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "X-GitHub-Event: The name of the event that triggered the delivery.",
+      "short": "X-GitHub-Event header, plus action in the body"
+    },
+    "delivery_id": {
+      "value": "X-GitHub-Delivery header (a GUID). A redelivery keeps the same X-GitHub-Delivery as the original.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "X-GitHub-Delivery: A globally unique identifier (GUID) to identify the event.",
+      "short": "X-GitHub-Delivery header (a redelivery keeps it)"
+    },
+    "delivery_id_redelivery": {
+      "value": "Same id on redelivery.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "If you request a redelivery, the X-GitHub-Delivery header will be the same as in the original delivery."
+    },
+    "other_headers": {
+      "value": "X-GitHub-Hook-ID (webhook id), X-GitHub-Hook-Installation-Target-Type, X-GitHub-Hook-Installation-Target-ID",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "X-GitHub-Hook-ID: The unique identifier of the webhook."
+    },
+    "handshake": {
+      "value": "A ping event is sent when a webhook is created (event name ping; body has zen, hook_id and hook). It is a confirmation, not a challenge; no response body is required by the docs. Handle it (or ignore it) and return 2xx.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "The ping event is a confirmation from GitHub that you configured the webhook correctly.",
+      "short": "ping event when the webhook is created; answer 2xx"
+    },
+    "handshake_on_create": {
+      "value": "ping is sent on creation.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks",
+      "read": "2026-10-20",
+      "quote": "After you create a new webhook, GitHub will send you a simple ping event to let you know you've set up the webhook correctly."
+    },
+    "handshake_handler_note": {
+      "value": "Handlers should account for ping.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/handling-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "as well as the ping event that GitHub sends when you create a webhook."
+    },
+    "batching": {
+      "value": "not stated by the provider as a batching rule; each delivery carries one event named by X-GitHub-Event",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "X-GitHub-Event: The name of the event that triggered the delivery."
+    },
+    "payload_size_cap": {
+      "value": "25 MB; larger events are not delivered at all.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "Payloads are capped at 25 MB. If an event generates a larger payload, GitHub will not deliver a payload for that webhook event."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "2XX (the docs example answers 202).",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "Your server should respond with a 2XX response within 10 seconds of receiving a webhook delivery.",
+      "short": "2xx"
+    },
+    "response_deadline": {
+      "value": "10 seconds; after that GitHub terminates the connection and counts the delivery as failed.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "If your server takes longer than that to respond, then GitHub terminates the connection and considers the delivery a failure.",
+      "short": "10 seconds"
+    },
+    "retries": {
+      "value": "No automatic retries: GitHub does not automatically redeliver failed deliveries. You redeliver manually (UI or REST API) for deliveries from the past 3 days.",
+      "source_url": "https://docs.github.com/en/webhooks/testing-and-troubleshooting-webhooks/redelivering-webhooks",
+      "read": "2026-10-20",
+      "quote": "GitHub does not automatically redeliver failed deliveries.",
+      "short": "None automatic; redeliver by hand within 3 days"
+    },
+    "redelivery_window": {
+      "value": "3 days.",
+      "source_url": "https://docs.github.com/en/webhooks/testing-and-troubleshooting-webhooks/redelivering-webhooks",
+      "read": "2026-10-20",
+      "quote": "You can redeliver webhook deliveries that occurred in the past 3 days."
+    },
+    "disabling": {
+      "value": "not stated by the provider (no page read says GitHub disables a webhook after failures)",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "ordering": {
+      "value": "not stated by the provider",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "duplicates": {
+      "value": "not stated by the provider as a duplicate-delivery warning. The docs suggest X-GitHub-Delivery to make sure each delivery is unique per event (framed as replay protection), and redeliveries reuse the id.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "you can use the X-GitHub-Delivery header to ensure that each delivery is unique per event."
+    },
+    "async_processing": {
+      "value": "Docs recommend queueing so you can answer quickly.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "you may want to set up a queue to process webhook payloads asynchronously."
+    }
+  },
+  "events": {
+    "full_list_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+    "common": [
+      {
+        "value": "push",
+        "meaning": "A commit or tag was pushed, or a branch or tag deleted, or a repo created from a template.",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is a push to a repository branch."
+      },
+      {
+        "value": "pull_request",
+        "meaning": "Any activity on a pull request (opened, closed, synchronize, and so on, via the action field).",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity on a pull request."
+      },
+      {
+        "value": "issues",
+        "meaning": "Activity on an issue (opened, closed, labeled and so on).",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity relating to an issue."
+      },
+      {
+        "value": "issue_comment",
+        "meaning": "A comment on an issue or pull request was created, edited or deleted.",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity relating to a comment on an issue or pull request."
+      },
+      {
+        "value": "release",
+        "meaning": "Release activity (published, created, edited, and so on).",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity relating to releases."
+      },
+      {
+        "value": "workflow_run",
+        "meaning": "A GitHub Actions workflow run changed state (requested, in progress, completed).",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity relating to a run of a GitHub Actions workflow."
+      },
+      {
+        "value": "check_run",
+        "meaning": "Activity on a check run.",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity relating to a check run."
+      },
+      {
+        "value": "installation",
+        "meaning": "A GitHub App installation was created, deleted, suspended and so on.",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when there is activity relating to a GitHub App installation."
+      },
+      {
+        "value": "create",
+        "meaning": "A branch or tag was created.",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when a Git branch or tag is created."
+      },
+      {
+        "value": "ping",
+        "meaning": "Sent once when a webhook is created, to confirm setup.",
+        "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+        "read": "2026-10-20",
+        "quote": "This event occurs when you create a new webhook."
+      }
+    ]
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "Repository webhook: Settings, Webhooks, Add webhook; set Payload URL, Content type, optional Secret and the events. Organization webhooks need an organization owner. A GitHub App has exactly one webhook, set in its registration.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks",
+      "read": "2026-10-20",
+      "quote": "You must be an organization owner to create webhooks in that organization."
+    },
+    "test_tools": {
+      "value": "ping on creation; Recent deliveries list with a Redeliver button (repository admins for repo webhooks, owners for org webhooks); REST API endpoints to redeliver; deliveries from the last 3 days can be redelivered.",
+      "source_url": "https://docs.github.com/en/webhooks/testing-and-troubleshooting-webhooks/redelivering-webhooks",
+      "read": "2026-10-20",
+      "quote": "Only people with admin access to a repository can redeliver webhooks in that repository."
+    },
+    "recent_deliveries": {
+      "value": "A recent deliveries log exists for troubleshooting; retention not stated on the pages read.",
+      "source_url": "https://docs.github.com/en/webhooks/testing-and-troubleshooting-webhooks/troubleshooting-webhooks",
+      "read": "2026-10-20",
+      "quote": "Look at the recent deliveries log for your webhook."
+    },
+    "ip_allowlist": {
+      "value": "Published via the GET /meta REST endpoint; changes occasionally, so refresh the allow list periodically.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "You can use the GET /meta endpoint to find the current list of GitHub's IP addresses."
+    }
+  },
+  "gotchas": [
+    {
+      "value": "10 second budget; GitHub kills the connection and marks the delivery failed. Queue the work.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "If your server takes longer than that to respond, then GitHub terminates the connection and considers the delivery a failure."
+    },
+    {
+      "value": "Failed deliveries are never retried automatically; if your server is down you must redeliver within 3 days.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "If your server goes down, you should redeliver missed webhooks once your server is back up."
+    },
+    {
+      "value": "Use the SHA-256 header, not the SHA-1 one.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "We recommend that you use the more secure X-Hub-Signature-256 instead."
+    },
+    {
+      "value": "Payloads can contain unicode; handle as UTF-8 when verifying.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries",
+      "read": "2026-10-20",
+      "quote": "Webhook payloads can contain unicode characters."
+    },
+    {
+      "value": "Oversized events (over 25 MB) are silently not delivered; docs give create with many branches or tags as an example.",
+      "source_url": "https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+      "read": "2026-10-20",
+      "quote": "This may happen, for example, on a create event if many branches or tags are pushed at once."
+    },
+    {
+      "value": "Leave SSL verification enabled; docs say use HTTPS.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "GitHub recommends that you leave SSL verification enabled."
+    },
+    {
+      "value": "Check both the event header and the action field before processing.",
+      "source_url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks",
+      "read": "2026-10-20",
+      "quote": "Check the event type and action before processing the event"
+    }
+  ],
+  "conflicts": [],
+  "unreadable": []
+}

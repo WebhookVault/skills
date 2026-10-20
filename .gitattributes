@@ -1,0 +1,16 @@
+# Line endings. Git stores LF in the repository and checks out LF on every platform, so a
+# contributor on Windows and one on Linux produce identical diffs. Without this, core.autocrlf
+# decides per machine and a file touched on Windows comes back as a whole-file change.
+* text=auto eol=lf
+
+# Shell scripts must keep LF or they fail to run; state it explicitly rather than relying on the
+# rule above surviving a future edit to this file.
+*.sh text eol=lf
+
+# Generated lockfiles: keep them out of diffs and language statistics. They are still committed
+# and still reviewed, just collapsed by default in pull requests.
+**/package-lock.json linguist-generated=true -diff
+
+# Signed test vectors are computed by openssl, not written by hand. A diff of one line of these
+# is noise; regenerate with the make_vectors scripts instead of editing.
+skills/**/examples/fixtures/vectors.json linguist-generated=true

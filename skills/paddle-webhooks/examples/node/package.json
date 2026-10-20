@@ -1,0 +1,9 @@
+{
+  "name": "paddle-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads Paddle Billing notifications; tested against openssl-made vectors.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}

@@ -1,0 +1,623 @@
+{
+  "slug": "woocommerce",
+  "name": "WooCommerce",
+  "domains": [
+    "woocommerce.com",
+    "woocommerce.github.io",
+    "developer.woocommerce.com",
+    "github.com/woocommerce/",
+    "raw.githubusercontent.com/woocommerce/"
+  ],
+  "docs_home": "https://woocommerce.com/document/webhooks/",
+  "signature": {
+    "header": {
+      "value": "X-WC-Webhook-Signature",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Signature'] = $this->generate_signature( $http_args['body'] );",
+      "short": "X-WC-Webhook-Signature"
+    },
+    "scheme": {
+      "value": "HMAC-SHA256 (default algorithm, filterable via woocommerce_webhook_hash_algorithm), raw binary digest, then base64 encoded",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "return base64_encode( hash_hmac( $hash_algo, $payload, wp_specialchars_decode( $this->get_secret(), ENT_QUOTES ), true ) );",
+      "short": "HMAC-SHA256, base64"
+    },
+    "scheme_doc_comment": {
+      "value": "The source comment describes it as a base64-encoded HMAC-SHA256 of the payload body",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "Generate a base64-encoded HMAC-SHA256 signature of the payload body"
+    },
+    "hash_algorithm_filter": {
+      "value": "The algorithm defaults to sha256 but a site can change it with the woocommerce_webhook_hash_algorithm filter",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$hash_algo = apply_filters( 'woocommerce_webhook_hash_algorithm', 'sha256', $payload, $this->get_id() );"
+    },
+    "signed_content": {
+      "value": "The exact request body string that is sent: trim( wp_json_encode( $payload ) ). The signature is generated from that already-encoded string (JSON by default).",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'body' => trim( wp_json_encode( $payload ) ),",
+      "short": "The raw body"
+    },
+    "signed_content_note": {
+      "value": "Source comment: the signature is calculated after the body has been encoded",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "is calculated after the body has already been encoded (JSON by default)."
+    },
+    "header_format": {
+      "value": "Bare base64 string, no prefix, no timestamp, one signature",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "X-WC-Webhook-Signature - a base64 encoded HMAC-SHA256 hash of the payload."
+    },
+    "secret_source": {
+      "value": "A secret set on the webhook in WooCommerce (Settings > Advanced > Webhooks > Secret field, or the REST API `secret` property). Left blank in the admin screen, the source generates a 50-character password. The woocommerce.com doc says a blank secret defaults to the current API user's consumer secret; see conflicts.",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "Secret — Enter a secret key used to generate a hash of the delivered webhook. The hash is included in the request headers.",
+      "short": "The webhook's Secret field (generated when left blank)"
+    },
+    "secret_default_in_admin_source": {
+      "value": "Admin screen: posted secret if given, otherwise wp_generate_password( 50, true, true )",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/admin/class-wc-admin-webhooks.php",
+      "read": "2026-10-20",
+      "quote": ": wp_generate_password( 50, true, true );"
+    },
+    "secret_default_in_rest_source": {
+      "value": "REST create: request secret if given, otherwise wp_generate_password( 50, true, true )",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php",
+      "read": "2026-10-20",
+      "quote": "$webhook->set_secret( ! empty( $request['secret'] ) ? $request['secret'] : wp_generate_password( 50, true, true ) );"
+    },
+    "secret_html_decoding": {
+      "value": "The secret is passed through wp_specialchars_decode( ..., ENT_QUOTES ) before it is used as the HMAC key, so a secret stored with HTML entities is decoded first",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "wp_specialchars_decode( $this->get_secret(), ENT_QUOTES )"
+    },
+    "secret_scope": {
+      "value": "Per webhook (each webhook record has its own `secret`)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "Get the secret used for generating the HMAC-SHA256 signature."
+    },
+    "secret_filter": {
+      "value": "The secret can be overridden by the woocommerce_webhook_secret filter at read time",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "return apply_filters( 'woocommerce_webhook_secret', $this->get_prop( 'secret', $context ), $this->get_id() );"
+    },
+    "timestamp_tolerance": {
+      "value": "not stated by the provider (the signature covers the body only; no timestamp header is sent)",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "",
+      "short": "None (no timestamp is signed)"
+    },
+    "rotation": {
+      "value": "not stated by the provider (updating the secret on the webhook replaces it; no dual signing is documented)",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "raw_body_note": {
+      "value": "The signature is over the exact encoded body string; no prose from the provider about raw body handling beyond the source comment",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "Note that the signature"
+    },
+    "sdk_helpers": {
+      "node": {
+        "value": "not stated by the provider",
+        "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+        "read": "2026-10-20",
+        "quote": ""
+      },
+      "python": {
+        "value": "not stated by the provider",
+        "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+        "read": "2026-10-20",
+        "quote": ""
+      },
+      "dotnet": {
+        "value": "not stated by the provider",
+        "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+        "read": "2026-10-20",
+        "quote": ""
+      }
+    },
+    "published_test_vector": null
+  },
+  "delivery": {
+    "method_and_content_type": {
+      "value": "POST, Content-Type application/json, redirects not followed (redirection 0), request timeout 60 seconds",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'Content-Type' => 'application/json',"
+    },
+    "method": {
+      "value": "POST",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'method' => 'POST',"
+    },
+    "user_agent": {
+      "value": "WooCommerce/<WC_VERSION> Hookshot (WordPress/<wp_version>)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'user-agent' => sprintf( 'WooCommerce/%s Hookshot (WordPress/%s)', Constants::get_constant( 'WC_VERSION' ), $GLOBALS['wp_version'] ),"
+    },
+    "headers_x_wc_webhook_source": {
+      "value": "X-WC-Webhook-Source: the site's home URL with trailing slash (home_url( '/' ))",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Source'] = home_url( '/' ); // Since 2.6.0."
+    },
+    "headers_x_wc_webhook_topic": {
+      "value": "X-WC-Webhook-Topic: the topic, e.g. order.updated",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Topic'] = $this->get_topic();"
+    },
+    "headers_x_wc_webhook_resource": {
+      "value": "X-WC-Webhook-Resource: the resource, e.g. order",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Resource'] = $this->get_resource();"
+    },
+    "headers_x_wc_webhook_event": {
+      "value": "X-WC-Webhook-Event: the event, e.g. updated",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Event'] = $this->get_event();"
+    },
+    "headers_x_wc_webhook_id": {
+      "value": "X-WC-Webhook-ID: the numeric ID of the webhook (not the delivery)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-ID'] = $this->get_id();"
+    },
+    "headers_x_wc_webhook_delivery_id": {
+      "value": "X-WC-Webhook-Delivery-ID: a hash generated per delivery",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Delivery-ID'] = $delivery_id;"
+    },
+    "headers_x_wc_webhook_signature": {
+      "value": "X-WC-Webhook-Signature: see the signature section",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$http_args['headers']['X-WC-Webhook-Signature'] = $this->generate_signature( $http_args['body'] );"
+    },
+    "event_type_location": {
+      "value": "Headers X-WC-Webhook-Topic (resource.event, e.g. order.updated), X-WC-Webhook-Resource and X-WC-Webhook-Event. The JSON body does not carry the topic.",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "X-WC-Webhook-Topic - e.g. order.updated",
+      "short": "X-WC-Webhook-Topic header, for example order.updated"
+    },
+    "delivery_id": {
+      "value": "X-WC-Webhook-Delivery-ID header. The source builds it as wp_hash( webhook_id . strtotime( 'now' ) ), a hash of the webhook ID and the current time in whole seconds.",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "return wp_hash( $this->get_id() . strtotime( 'now' ) );",
+      "short": "X-WC-Webhook-Delivery-ID header"
+    },
+    "delivery_id_comment": {
+      "value": "Source comment on how the ID is generated",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "we generate a unique hash instead based on current time and webhook ID."
+    },
+    "payload": {
+      "value": "JSON; for the API resources (coupons, customers, orders, products) the body is the same as the REST API response for that resource. Custom `action.*` topics pass the first hook argument.",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "the response is exactly the same as if requested via the REST API."
+    },
+    "handshake": {
+      "value": "A ping is sent to the delivery URL when a webhook is first created / first saved as Active: a POST whose body is the string `webhook_id=<id>` (form-style, not JSON). The ping args set only user-agent and body in the source (no Content-Type, no X-WC-Webhook-* headers, no signature). The ping must be answered with exactly 200.",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'body' => 'webhook_id=' . $this->get_id(),",
+      "short": "Unsigned ping, body webhook_id=<id>, on activation; answer 200"
+    },
+    "ping_when": {
+      "value": "Sent when a webhook is first created and when it is first activated",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "Send a test ping to the delivery URL, sent when the webhook is first created."
+    },
+    "ping_when_doc": {
+      "value": "The first time a webhook is saved with Active status",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "The first time you save a webhook with the Active status, WooCommerce sends a ping to the Delivery URL."
+    },
+    "ping_success": {
+      "value": "Only HTTP 200 counts for the ping; any other code or an unreachable URL returns an error to the admin screen",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "if ( 200 !== $response_code ) {"
+    },
+    "ping_in_rest": {
+      "value": "Creating a webhook through the REST API also sends a ping",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php",
+      "read": "2026-10-20",
+      "quote": "// Send ping."
+    },
+    "batching": {
+      "value": "One event per request (one payload built from one hook argument per delivery)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$payload = $this->build_payload( $arg );"
+    },
+    "async_delivery": {
+      "value": "Delivery is queued at the end of the request (shutdown hook) and by default run in the background through WooCommerce's queue as the woocommerce_deliver_webhook_async action in group woocommerce-webhooks; woocommerce_webhook_deliver_async can force immediate delivery",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "Webhooks are processed in the background by default"
+    },
+    "queue_backend": {
+      "value": "WC()->queue()->add is implemented with Action Scheduler (as_schedule_single_action)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/queue/class-wc-action-queue.php",
+      "read": "2026-10-20",
+      "quote": "return as_schedule_single_action( $timestamp, $hook, $args, $group );"
+    },
+    "coalescing_window": {
+      "value": "The same webhook with the same hook arguments is scheduled at most once per 10 minutes (an already-pending action is not duplicated)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "only schedule one webhook every 10 minutes to maintain backward compatibility with WP Cron behaviour seen in WC < 3.5.0."
+    },
+    "rest_doc_async_statement": {
+      "value": "The REST docs say delivery is processed in the background using wp-cron (see conflicts)",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "processed in the background by default using wp-cron."
+    }
+  },
+  "responding": {
+    "success_status": {
+      "value": "Any 2xx, plus 301 and 302 (the doc wording). The source condition counts any code from 200 up to and including 302 as success; redirects are not followed.",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "A failure is any response that is not a 2xx, 301, or 302 HTTP status code.",
+      "short": "2xx (also 301 and 302)"
+    },
+    "success_status_source": {
+      "value": "Code: response >= 200 and < 303 resets the failure counter",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "if ( intval( $response_code ) >= 200 && intval( $response_code ) < 303 ) {"
+    },
+    "response_deadline": {
+      "value": "60 seconds (HTTP timeout set to MINUTE_IN_SECONDS); not documented in prose",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'timeout' => MINUTE_IN_SECONDS,",
+      "short": "60 seconds (WooCommerce source)"
+    },
+    "redirects": {
+      "value": "Redirects are not followed (a 301/302 is read as the response and counted as success)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'redirection' => 0,"
+    },
+    "retries": {
+      "value": "not stated by the provider. The source performs one wp_safe_remote_request per scheduled delivery and I found no retry logic in class-wc-webhook.php or wc-webhook-functions.php; a failed delivery only increments the consecutive-failure counter.",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "$response = wp_safe_remote_request( $this->get_delivery_url(), $http_args );",
+      "short": "None in the source; disabled after more than five consecutive failures"
+    },
+    "disabling": {
+      "value": "Webhook status becomes `disabled` after more than five consecutive failed deliveries (doc wording); threshold filter is woocommerce_max_webhook_delivery_failures (default 5); action hook woocommerce_webhook_disabled_due_delivery_failures fires. A re-enable requires editing the webhook (status back to Active).",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "WooCommerce automatically disables a webhook after more than five consecutive delivery failures."
+    },
+    "disabling_filter": {
+      "value": "woocommerce_max_webhook_delivery_failures, default 5",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "you can use the woocommerce_max_webhook_delivery_failures filter."
+    },
+    "disabling_source": {
+      "value": "Source condition is `$failures > <filter, default 5>` evaluated before the counter is incremented; when true the status is set to disabled. (Reading of the code, not provider prose: the counter reaches 6 on the sixth consecutive failure and the webhook is disabled when the seventh consecutive failed delivery is processed.)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "if ( $failures > apply_filters( 'woocommerce_max_webhook_delivery_failures', 5 ) ) {"
+    },
+    "disabling_failure_definition_source_comment": {
+      "value": "Source comment defines the rule as more than 5 consecutive failures",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "if more than 5 consecutive failures occur."
+    },
+    "status_values": {
+      "value": "active (delivers), paused (paused by admin), disabled (paused automatically due to consecutive failures)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "'disabled' - does not delivery payload, paused automatically due to consecutive failures."
+    },
+    "ordering": {
+      "value": "not stated by the provider (deliveries are independent background actions)",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": ""
+    },
+    "duplicates": {
+      "value": "not stated by the provider. Source suppresses re-processing of the same hook argument within one request and coalesces identical pending deliveries (see coalescing_window).",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "Make webhooks unique"
+    }
+  },
+  "events": {
+    "full_list_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks",
+    "topics_core_doc": {
+      "value": "Core topics: coupon.created/updated/deleted, customer.created/updated/deleted, order.created/updated/deleted, product.created/updated/deleted (docs); plus action.<hook> custom topics",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "Orders: order.created, order.updated and order.deleted."
+    },
+    "topics_source_events": {
+      "value": "Source accepts resources coupon, customer, order, product with events created, updated, deleted, restored, published, but only pairs that have a registered hook are valid (e.g. order.published and customer.restored are rejected)",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "$default_events = array( 'created', 'updated', 'deleted', 'restored', 'published' );"
+    },
+    "topics_invalid_pairs": {
+      "value": "Default pairs with no registered hook are rejected",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "(e.g. `order.published`, `customer.restored`) are rejected"
+    },
+    "common": [
+      {
+        "value": "order.created",
+        "meaning": "A new order was created (hook woocommerce_new_order)",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_new_order',"
+      },
+      {
+        "value": "order.updated",
+        "meaning": "Order updated; also fires on order refunds and refund deletion",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_order_refunded',"
+      },
+      {
+        "value": "order.deleted",
+        "meaning": "Order trashed (hooks wp_trash_post, woocommerce_trash_order)",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_trash_order',"
+      },
+      {
+        "value": "order.restored",
+        "meaning": "Order restored from the trash",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_untrash_order',"
+      },
+      {
+        "value": "product.created",
+        "meaning": "Product or variation created",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_new_product_variation',"
+      },
+      {
+        "value": "product.updated",
+        "meaning": "Product or variation updated",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_update_product_variation',"
+      },
+      {
+        "value": "customer.created",
+        "meaning": "Customer account created",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_new_customer',"
+      },
+      {
+        "value": "coupon.created",
+        "meaning": "Coupon created",
+        "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+        "read": "2026-10-20",
+        "quote": "'woocommerce_new_coupon',"
+      },
+      {
+        "value": "action.<hook_name> (e.g. action.woocommerce_add_to_cart)",
+        "meaning": "Custom topic that fires when a WooCommerce action runs; names must start with action.woocommerce_ or action.wc_",
+        "source_url": "https://woocommerce.com/document/webhooks/",
+        "read": "2026-10-20",
+        "quote": "you can create a webhook that fires every time a product is added to the shopping cart by using the action woocommerce_add_to_cart"
+      }
+    ]
+  },
+  "setup": {
+    "where_url_is_entered": {
+      "value": "WooCommerce > Settings > Advanced > Webhooks > Add webhook (Delivery URL field), or POST /wp-json/wc/v3/webhooks",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "Go to WooCommerce > Settings > Advanced > Webhooks."
+    },
+    "fields": {
+      "value": "Name, Status (Active / Paused / Disabled), Topic, Custom Topic, Action Event, Delivery URL, Secret",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "Delivery URL — Enter the URL where the webhook payload is delivered."
+    },
+    "delivery_url_schemes": {
+      "value": "Delivery URL must be HTTP or HTTPS",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "URL where the payload is delivered, must be HTTP or HTTPS."
+    },
+    "test_tools": {
+      "value": "The ping on first activation; delivery logs under WooCommerce > Status > Logs (source webhooks-delivery) recording request duration, URL, headers, body and the response. No send-test-event or redelivery button is documented.",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "select webhooks-delivery from the All sources dropdown to filter the list."
+    },
+    "delivery_logging": {
+      "value": "Request and response are logged; the body is only logged in WP_DEBUG mode",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "Webhook body is not logged unless WP_DEBUG mode is turned on."
+    },
+    "ip_allowlist": {
+      "value": "not stated by the provider (webhooks are sent from the merchant's own site; X-WC-Webhook-Source names that site)",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": ""
+    }
+  },
+  "gotchas": [
+    {
+      "value": "The ping body is the plain string webhook_id=<id>, not JSON, and is not signed; a receiver that JSON-parses or verifies signatures on every POST will reject it, and the ping must return exactly 200 or the admin save reports an error",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+      "read": "2026-10-20",
+      "quote": "return new WP_Error( 'error', sprintf( __( 'Error: Delivery URL returned response code: %s', 'woocommerce' ), absint( $response_code ) ) );"
+    },
+    {
+      "value": "Failures are consecutive failed deliveries; any success resets the counter, and a webhook disabled by failures must be re-enabled by editing it",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "the webhook is disabled and must be edited via the REST API to re-enable."
+    },
+    {
+      "value": "4xx and 5xx responses count as failures",
+      "source_url": "https://woocommerce.com/document/webhooks/",
+      "read": "2026-10-20",
+      "quote": "For example, 4xx or 5xx responses count as failures."
+    },
+    {
+      "value": "Payload for API resources mirrors the REST API response, so shapes follow the REST API version configured on the webhook",
+      "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "read": "2026-10-20",
+      "quote": "the response is exactly the same as if requested via the REST API."
+    },
+    {
+      "value": "Identical pending deliveries are coalesced within 10 minutes, so rapid repeated updates of the same record may produce fewer webhooks than changes",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "Make webhooks unique - only schedule one webhook every 10 minutes"
+    },
+    {
+      "value": "Webhooks are delivered in the background so delivery lag depends on the site's queue runner (Action Scheduler), not on the triggering request",
+      "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/wc-webhook-functions.php",
+      "read": "2026-10-20",
+      "quote": "Webhooks are processed in the background by default"
+    }
+  ],
+  "conflicts": [
+    {
+      "topic": "Default secret when left blank (woocommerce.com doc vs source)",
+      "note": "Default secret when left blank (woocommerce.com doc vs source)",
+      "sources": [
+        {
+          "source_url": "https://woocommerce.com/document/webhooks/",
+          "read": "2026-10-20",
+          "quote": "If you leave this blank, it defaults to the current API user’s consumer secret."
+        },
+        {
+          "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/admin/class-wc-admin-webhooks.php",
+          "read": "2026-10-20",
+          "quote": ": wp_generate_password( 50, true, true );"
+        }
+      ]
+    },
+    {
+      "topic": "Default secret in the REST API (REST docs vs source)",
+      "note": "Default secret in the REST API (REST docs vs source)",
+      "sources": [
+        {
+          "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+          "read": "2026-10-20",
+          "quote": "This will default is a MD5 hash from the current user's ID|username if not provided."
+        },
+        {
+          "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php",
+          "read": "2026-10-20",
+          "quote": "$webhook->set_secret( ! empty( $request['secret'] ) ? $request['secret'] : wp_generate_password( 50, true, true ) );"
+        }
+      ]
+    },
+    {
+      "topic": "Background delivery mechanism (REST docs say wp-cron, source uses Action Scheduler)",
+      "note": "Background delivery mechanism (REST docs say wp-cron, source uses Action Scheduler)",
+      "sources": [
+        {
+          "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+          "read": "2026-10-20",
+          "quote": "processed in the background by default using wp-cron."
+        },
+        {
+          "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/queue/class-wc-action-queue.php",
+          "read": "2026-10-20",
+          "quote": "return as_schedule_single_action( $timestamp, $hook, $args, $group );"
+        }
+      ]
+    },
+    {
+      "topic": "Failure threshold wording (REST docs: after 5; woocommerce.com doc and source: more than 5)",
+      "note": "Failure threshold wording (REST docs: after 5; woocommerce.com doc and source: more than 5)",
+      "sources": [
+        {
+          "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+          "read": "2026-10-20",
+          "quote": "After 5 consecutive failed deliveries"
+        },
+        {
+          "source_url": "https://woocommerce.com/document/webhooks/",
+          "read": "2026-10-20",
+          "quote": "WooCommerce automatically disables a webhook after more than five consecutive delivery failures."
+        }
+      ]
+    },
+    {
+      "topic": "Delivery ID (REST docs say a comment ID; source generates a hash)",
+      "note": "Delivery ID (REST docs say a comment ID; source generates a hash)",
+      "sources": [
+        {
+          "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+          "read": "2026-10-20",
+          "quote": "X-WC-Webhook-Delivery-ID - delivery log ID (a comment)."
+        },
+        {
+          "source_url": "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php",
+          "read": "2026-10-20",
+          "quote": "Since we no longer use comments to store delivery logs"
+        }
+      ]
+    },
+    {
+      "topic": "Success status codes (REST docs: 2xx; woocommerce.com doc and source: also 301/302)",
+      "note": "Success status codes (REST docs: 2xx; woocommerce.com doc and source: also 301/302)",
+      "sources": [
+        {
+          "source_url": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+          "read": "2026-10-20",
+          "quote": "(as defined by a non HTTP 2xx response code)"
+        },
+        {
+          "source_url": "https://woocommerce.com/document/webhooks/",
+          "read": "2026-10-20",
+          "quote": "A failure is any response that is not a 2xx, 301, or 302 HTTP status code."
+        }
+      ]
+    }
+  ],
+  "unreadable": []
+}

@@ -1,0 +1,9 @@
+{
+  "name": "github-webhooks-example",
+  "private": true,
+  "type": "module",
+  "description": "Verifies and reads GitHub webhook deliveries; tested against openssl-made vectors and GitHub's published example.",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}
