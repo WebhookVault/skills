@@ -67,6 +67,24 @@ re-formatted JSON fails verification. How to run them: [examples/README.md](exam
 - **One route, one parser.** Give the webhook route its own raw-body handling; a global JSON parser
   registered first consumes the body. Per framework: [frameworks.md](references/frameworks.md).
 
+## Behind WebhookVault
+
+A receiver that WebhookVault forwards to gets four extra headers on every delivery:
+`X-WebhookVault-Request-Id` (the same on every retry and replay of one captured request),
+`X-WebhookVault-Delivery-Id` (the same across the retries of one delivery, new on each replay),
+`X-WebhookVault-Attempt` (from 1) and, on a replay only, `X-WebhookVault-Replay: true`.
+
+- **Log them** with the event id: they answer "was this a retry or a replay?" when a person
+  traces a duplicate.
+- **De-duplicate on the event id first.** Fall back to `X-WebhookVault-Request-Id` only when the
+  payload has none; a sender's own retry arrives as a new captured request with a new id.
+- **Never trust them for authenticity.** They are not signed; verify the sender's signature, or
+  WebhookVault's `wv-signature` when the action signs deliveries, as step 3 does.
+- **Say success the way the action expects.** By default WebhookVault counts any 2xx as delivered.
+  An action can instead accept specific codes (for example `409` for "already processed") or
+  require a condition on the response body; a receiver that answers 200 with an error in the body
+  then reads as a failed delivery and is retried.
+
 ## Before shipping
 
 Run the review list in [checklist.md](references/checklist.md): secrets, logging, limits, health,

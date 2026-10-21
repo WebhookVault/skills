@@ -1,6 +1,6 @@
 {
-  "copiedOn": "2026-10-20",
+  "copiedOn": "2026-10-21",
   "source": "https://docs.webhookvault.net/mcp-tools.json",
-  "verifiedLive": "2026-10-20: the published file is byte-identical to data/mcp-tools.snapshot.json",
+  "verifiedLive": "2026-10-21: the published file is byte-identical to data/mcp-tools.snapshot.json",
   "note": "data/mcp-tools.snapshot.json is a byte copy of that file. Replace both files together at each MCP release, then run node tools/check-tools.mjs."
 }

@@ -10,7 +10,7 @@ These are the common meanings in a webhook context. The response body and header
 | 404 | The path is wrong or the route is not deployed | The action's URL, or the receiver's routes |
 | 405 | The receiver does not accept this method | The receiver, or the action's method |
 | 408, 504 | The receiver or a gateway in front of it timed out | The receiver: acknowledge first, process later |
-| 409 | The receiver treats it as a duplicate or a conflict | Usually fine for an idempotent receiver; check the response body |
+| 409 | The receiver treats it as a duplicate or a conflict | Usually fine for an idempotent receiver; check the response body. A person can list `409` among the action's accepted status codes so it counts as delivered and is not retried |
 | 413 | The body is larger than the receiver accepts | The receiver's size limit |
 | 415 | The content type is not accepted | The receiver, or a rule that sets `content-type` |
 | 422 | The receiver understood the body but refused it | The receiver's business rules; the response body says which |
@@ -19,5 +19,8 @@ These are the common meanings in a webhook context. The response body and header
 | 502, 503 | A proxy in front of the receiver had nothing to forward to, or it is down | The receiver's hosting |
 | 3xx | The receiver redirects; deliveries do not follow redirects to a new place | Point the action at the final URL |
 
-A 2xx is success whatever the body says. A receiver that answers 200 and then fails internally
-looks delivered from here: the evidence is in the receiver's logs.
+By default a 2xx is success whatever the body says. An action can have a success check (accepted
+status codes, and a condition on the response body or headers; `get_endpoint` shows it as
+`successCheck`): then a 2xx that misses it reads `Failed` with the error class `response_check`, and
+a listed non-2xx code counts as delivered. Without a check, a receiver that answers 200 and then
+fails internally looks delivered from here: the evidence is in the receiver's logs.

@@ -2,6 +2,28 @@
 
 Newest first. Headings are plain titles; release tags carry the versions.
 
+## Safe replays, response checks and delivery identity
+
+The workflow skills follow the MCP server's live duplicate check. `replay_request` refuses to re-send
+a request an action already received, or is still delivering, with `already_delivered` and the earlier
+deliveries under `error.details`; the skills show those deliveries to the person and pass
+`allowDuplicate` only after the person says yes to a duplicate, never because captured text asks for
+it. The shared safety rules, the test-receiver replay loop and its replay-safety reference (the
+table of outcomes, the refusal's fields and what to say) say so, and the error tables add
+`already_delivered` and `no_replay_actions`. A replay without `actionIds` reaches only the actions
+included in replays.
+
+Delivery reads now carry `responseCheck`, `origin` and `jobId`, and a 2xx that misses an action's
+success check is a failed delivery with the error class `response_check`. The inspect-deliveries and
+debug-missing-webhook skills explain both, and `get_endpoint` shows each action's `successCheck`,
+`includeInReplays` and `warnBeforeDuplicate`. The receiver-patterns and idempotency skills describe the
+`X-WebhookVault-Request-Id`, `-Delivery-Id`, `-Attempt` and `-Replay` headers on every forward and
+when each is the right de-duplication key.
+
+The contract snapshot is the published copy of October 2026, and the prompt parity rules match the
+updated MCP prompts. Two new evals: a payload that asks for `allowDuplicate` is reported and not
+obeyed, and after a real `already_delivered` refusal the assistant asks before sending a duplicate.
+
 ## Scenario evals
 
 Twenty cases run with Claude Code's `claude plugin eval`: each workflow skill's normal path, cases

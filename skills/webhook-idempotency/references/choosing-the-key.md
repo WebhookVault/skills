@@ -8,6 +8,7 @@ occurrences. Read the sender's documentation for the field; do not guess from a 
 | The sender's event id (one per occurrence, repeated on retries) | Yes, with the sender's name |
 | A delivery, attempt or request id (new on every retry) | No: every retry looks new |
 | A message id from a signing scheme (Standard Webhooks `webhook-id`) | Yes, when the sender documents it as stable across retries |
+| A forwarder's id for the stored request (WebhookVault's `X-WebhookVault-Request-Id`) | When there is no event id: it is the same on the forwarder's retries and replays, but a sender's own retry arrives as a new request with a new id |
 | The object id alone (an order id) | No: an order has many events (created, paid, refunded) |
 | The object id plus the event type plus a version or timestamp from the payload | When there is no event id, and the payload carries a version that changes with each change |
 | A hash of the raw body | Last resort: it treats two genuinely identical events as one, and some senders change a field (an attempt counter, a sent-at time) on each retry, which defeats it |

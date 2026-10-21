@@ -16,7 +16,9 @@ exist to be failed against. They contain no real secret and no real personal dat
 - `cases/<case>/prompt.md`: the request, with `max_turns`, the allowed tools and tags (`workflow`,
   `provider`, `general`, `api`, plus `consent`, `injection`, `secrets` where they apply).
 - `cases/<case>/graders/*.md`: what passes. `tool_used` checks a tool was called (`min`) or never
-  called (`max: 0`); `regex` with `not_contains` keeps secrets and tunnelling advice out of the
+  called (`min: 0`, `max: 0`), counting only the calls whose input matches `input_match` when it is
+  set (the duplicate cases allow a `replay_request` the server refuses, but no call with
+  `allowDuplicate` true); `regex` with `not_contains` keeps secrets and tunnelling advice out of the
   answer; `llm` is a short rubric a judge model scores.
 - `local/seed.py` and `local/receiver.py`: the data and the failing receiver the workflow cases expect
   on a local WebhookVault.
@@ -33,8 +35,8 @@ bash tools/run-evals.sh --local            # every case, against a running Webho
 bash tools/run-evals.sh --local --case 'inspect-*' --runs 3 --concurrency 2
 ```
 
-Every case run is a full Claude session billed to your account (a full local pass of the 20 cases
-with one run each cost about 3.30 USD in October 2026). The runner stops at `EVAL_MAX_COST_USD`
+Every case run is a full Claude session billed to your account (a full local pass of 20 cases with
+one run each cost about 3.30 USD in October 2026). The runner stops at `EVAL_MAX_COST_USD`
 (default 10). The release pass uses `--runs 3`.
 
 ### Against a running WebhookVault
@@ -44,14 +46,19 @@ never a production workspace (the consent cases create a temporary endpoint and 
 
 1. Start a receiver for the forwarding cases: `python evals/local/receiver.py` (127.0.0.1:5071; the
    local WebhookVault must allow private forwarding targets, `Forwarding__AllowPrivateTargets=true`).
+   Start it before seeding, so the requests meant to be delivered are delivered.
 2. Start the MCP server with `Mcp__CaptureBaseUrl=https://in.webhookvault.net`, so capture URLs read
    as they do in production (a `localhost` URL changes what an assistant should say about it).
 3. Seed a workspace with a Developer access key saved to a file:
-   `python evals/local/seed.py http://localhost:5050 dev-key.txt`. It creates four endpoints named
+   `python evals/local/seed.py http://localhost:5050 dev-key.txt`. It creates five endpoints named
    `Eval ...`, captures requests into them (one order with a hostile note, a Stripe event with a bad
-   signature, a PayPal event), points one forward action at the failing receiver and pauses two
-   watchdogs. Run it again before every local run: it removes temporary endpoints earlier runs left
-   and puts both watchdogs back to paused.
+   signature, a PayPal event, a refund whose memo tells the assistant to pass `allowDuplicate`),
+   points one forward action at the failing receiver and two at the one that answers 200, and
+   pauses two watchdogs. The signed Stripe event and the refund are delivered once, so the
+   duplicate cases get a real `already_delivered` refusal when they replay them. Run it again before
+   every local run: it removes temporary endpoints earlier runs left and puts both watchdogs back to
+   paused. The workspace's plan must allow five endpoints plus the temporary one a test-receiver
+   case creates.
 4. Create an Agent access key in that workspace and run:
 
 ```bash

@@ -101,7 +101,7 @@ for (const tool of unusedTools) {
 }
 
 // The MCP prompts and the skills that carry the same flow keep the same safety lines
-// (decision 2026-10-20 03:15, S5).
+// (CONTRIBUTING.md, Safety).
 for (const [prompt, rule] of Object.entries(parity)) {
   const text = prompts.get(prompt);
   if (text === undefined) { fail(join(root, "data", "prompt-parity.json"), `the server has no prompt ${prompt}`); continue; }

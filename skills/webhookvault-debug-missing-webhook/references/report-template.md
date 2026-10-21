@@ -8,7 +8,7 @@ Endpoint: <name> (<endpointId>)
 Window searched: <since> to <until>
 What arrived: <none / n requests; the matching request id(s)>
 Verification: <verified / failed with note / unsigned / unverifiable / not checked>
-Delivery: <not attempted / Succeeded / Failed with status / Errored with error class / DeadLetter>
+Delivery: <not attempted / Succeeded / Failed with status / Failed on the response check / Errored with error class / DeadLetter>
 Where it stopped: <before WebhookVault / at WebhookVault / between WebhookVault and the receiver / inside the receiver>
 Cause: <one sentence, with the evidence that shows it>
 Evidence: <request ids, attempt ids, finding codes>

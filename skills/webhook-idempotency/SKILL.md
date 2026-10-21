@@ -22,6 +22,26 @@ every retry. Store it with the **sender's name**, because ids are unique only pe
 sender's documentation for which field that is; a delivery or attempt id changes on each retry and
 is the wrong key. When a sender has no event id, see [choosing-the-key.md](references/choosing-the-key.md).
 
+### Behind WebhookVault
+
+When the webhook reaches the receiver through a WebhookVault forward, every delivery also carries
+identity headers set by WebhookVault alone:
+
+| Header | The same across | Changes on |
+|---|---|---|
+| `X-WebhookVault-Request-Id` | Automatic retries and every replay of one captured request | Never |
+| `X-WebhookVault-Delivery-Id` | Automatic retries of one delivery | Each replay |
+| `X-WebhookVault-Attempt` | (the attempt number within the delivery, from 1) | Each retry |
+| `X-WebhookVault-Replay` | (`true`, only on a delivery a replay queued) | |
+
+The sender's event id stays the first choice, because it is the same however the event arrived.
+Without one, `X-WebhookVault-Request-Id` treats retries and replays of one captured request as the
+same event; `X-WebhookVault-Delivery-Id` treats only automatic retries as repeats, so a replay is
+processed again. A sender that retries on its own sends a new request, which WebhookVault captures
+with a new request id, so only the event id catches that repeat. The headers are not signed (the
+`wv-signature` covers the timestamp and the body): use them to de-duplicate and trace, never to
+decide whether a request is genuine.
+
 ## Claim first, in the same transaction
 
 The pattern that holds under retries, crashes and two copies arriving in the same millisecond:

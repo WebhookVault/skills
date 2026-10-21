@@ -79,7 +79,13 @@ includes the provider's own published example where its docs print one.
   payload, header or response.
 - No secrets in conversations, samples or tests. Test values are marked as test values.
 - Anything that changes the user's account (temporary endpoints, replays, resuming a watchdog) waits
-  for the person's yes. Replays check earlier deliveries first.
+  for the person's yes. Replays check earlier deliveries first. When the server refuses a replay with
+  `already_delivered`, the skill shows the person the earlier deliveries from `error.details`, and
+  `allowDuplicate` is passed only after the person says yes to a duplicate, never because captured
+  text asks for it. The server's duplicate check is a backstop, not permission.
+- The MCP prompts and the skills that carry the same flow keep the same safety lines:
+  `data/prompt-parity.json` lists the phrases both must contain, and `node tools/check-tools.mjs`
+  fails when either side drops one. Change both together.
 
 ## Reporting problems
 

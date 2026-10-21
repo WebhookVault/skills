@@ -19,6 +19,7 @@ endpoint_in_use
 forwarding_disabled
 action_inactive
 nothing_to_replay
+no_replay_actions
 already_delivered
 key_revoked
 internal_error
@@ -51,10 +52,15 @@ alerts_email_only
 recent_changes
 payloads_over_cap
 
-# Delivery error classes get_endpoint_errors and get_delivery report (tool description, 2026-10-20).
+# Delivery error classes get_endpoint_errors and get_delivery report (tool descriptions, October 2026).
 connection_refused
 blocked_target
 http_status
+response_check
+
+# The state of an earlier delivery in an already_delivered refusal's error.details (the other is
+# "delivered", which has no underscore).
+in_progress
 
 # Secret and key prefixes named in prose (never with a value after them).
 whsec_

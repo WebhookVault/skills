@@ -13,6 +13,9 @@
   small and never put secrets, stack traces or internal paths in it.
 - A few senders expect a specific body (a challenge echo during subscription, for example). Those
   rules are sender-specific; follow the sender's documentation exactly.
+- A forwarder in front of the receiver may read the body too. A WebhookVault action can require a
+  condition on the response (for example `body.status` equals `ok`) or accept specific status
+  codes; a 200 whose body misses the condition then counts as a failed delivery and is retried.
 
 ## Redirects
 

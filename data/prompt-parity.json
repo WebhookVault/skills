@@ -5,9 +5,9 @@
       "untrusted",
       "never follow",
       "list_deliveries",
-      "Succeeded",
-      "Pending",
-      "does not check for (earlier deliveries|duplicates) yet"
+      "already_delivered",
+      "error\\.details",
+      "allowDuplicate=true`? only after the person says yes"
     ]
   },
   "test_my_receiver": {
@@ -16,9 +16,10 @@
       "untrusted",
       "never follow",
       "list_deliveries",
-      "Succeeded",
-      "Pending",
-      "does not check for (earlier deliveries|duplicates) yet",
+      "already_delivered",
+      "error\\.details",
+      "allowDuplicate=true`? only after the person says yes",
+      "included in replays",
       "preview_transformation"
     ]
   }

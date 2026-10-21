@@ -41,7 +41,8 @@ to do. Use the code, not the sentence, to decide what to do next.
 | `forwarding_disabled` | No action on the endpoint is switched on | A person switches one on |
 | `action_inactive` | The chosen action is switched off | A person switches it on |
 | `nothing_to_replay` | Nothing could be queued (a cut body, or the request or actions changed) | Read the endpoint again |
-| `already_delivered` | Reserved for the duplicate check, which is not live yet | Check `list_deliveries` yourself before any replay |
+| `no_replay_actions` | No action was named and none of the switched-on ones is included in replays | Name the actions in `actionIds`, with the person's yes |
+| `already_delivered` | A chosen action already received this request or is still delivering it. Nothing was queued; `error.details` lists each earlier delivery (action, state, time, status, `jobId`) | Show the person those deliveries; pass `allowDuplicate=true` only after they say yes to a duplicate |
 | `key_revoked` | The key was revoked or suspended while `await_request` was waiting | The person creates a new key |
 | `internal_error` | WebhookVault failed; the message has a trace id | Retry once; report the trace id if it repeats |
 
