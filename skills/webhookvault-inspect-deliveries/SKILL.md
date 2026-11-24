@@ -7,7 +7,7 @@ metadata:
   author: "webhookvault"
   version: "0.1.0"
   repository: "https://github.com/WebhookVault/skills"
-  mcp-contract: "2026-10-21"
+  mcp-contract: "2026-11-24"
   mcp-tools: "get_endpoint_errors get_endpoint_stats list_deliveries get_delivery get_request get_endpoint get_transformations replay_request"
 ---
 

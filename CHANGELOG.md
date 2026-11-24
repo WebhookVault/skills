@@ -2,6 +2,17 @@
 
 Newest first. Headings are plain titles; release tags carry the versions.
 
+## Keys act for the person who made them
+
+An Agent access key now acts for the person who created it: a tool runs only when it is within the
+key's scopes and that person's role in the workspace allows it today. `whoami` reports the key's
+scopes and the role it acts with. The error tables add `scope_required` and
+`workspace_role_required`, and say that a key stops working (401, or `key_revoked` during
+`await_request`) when its creator leaves the workspace or is disabled. The test-receiver and
+watchdog-triage skills say that creating and ending temporary endpoints, resuming a watchdog and
+reading alert deliveries need a key made by an owner or admin. The contract snapshot is the
+published copy of November 2026.
+
 ## Safe replays, response checks and delivery identity
 
 The workflow skills follow the MCP server's live duplicate check. `replay_request` refuses to re-send

@@ -22,6 +22,8 @@ nothing_to_replay
 no_replay_actions
 already_delivered
 key_revoked
+scope_required
+workspace_role_required
 internal_error
 
 # Refusals before any tool runs (MCP server and API).

@@ -7,7 +7,7 @@ metadata:
   author: "webhookvault"
   version: "0.1.0"
   repository: "https://github.com/WebhookVault/skills"
-  mcp-contract: "2026-10-21"
+  mcp-contract: "2026-11-24"
   mcp-tools: "create_test_endpoint await_request get_request get_request_fields search_requests preview_transformation list_deliveries get_delivery replay_request end_test_endpoint get_endpoint list_providers"
 ---
 
@@ -50,7 +50,9 @@ Two kinds of test, and the person chooses:
    lifetime that covers the test (default 60 minutes, at most 1,440), and the provider slug from
    `list_providers(slug)` when the sender is a known provider, so event names show and signatures
    can be checked. It captures only, takes one of the plan's endpoint slots until it expires, and
-   one key may hold three at once. The result has its id and capture URL.
+   one key may hold three at once. The result has its id and capture URL. Creating and ending
+   one needs a key made by an owner or admin; a member's key is refused with
+   `workspace_role_required`, and the person makes the endpoint in the app instead.
 2. **Give the person the capture URL** to paste into the sender (a provider's webhook settings, or
    their own system). A capture URL accepts requests from anyone who has it: share it only with the
    sender.

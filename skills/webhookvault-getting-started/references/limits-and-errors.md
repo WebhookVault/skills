@@ -43,9 +43,16 @@ to do. Use the code, not the sentence, to decide what to do next.
 | `nothing_to_replay` | Nothing could be queued (a cut body, or the request or actions changed) | Read the endpoint again |
 | `no_replay_actions` | No action was named and none of the switched-on ones is included in replays | Name the actions in `actionIds`, with the person's yes |
 | `already_delivered` | A chosen action already received this request or is still delivering it. Nothing was queued; `error.details` lists each earlier delivery (action, state, time, status, `jobId`) | Show the person those deliveries; pass `allowDuplicate=true` only after they say yes to a duplicate |
-| `key_revoked` | The key was revoked or suspended while `await_request` was waiting | The person creates a new key |
+| `key_revoked` | The key was revoked or suspended, or the person it acts for left the workspace or was disabled, while `await_request` was waiting | The person creates a new key |
+| `scope_required` | The tool is outside the key's scopes. Nothing ran | Tell the person; `whoami` lists the key's scopes |
+| `workspace_role_required` | The person who created the key may not do this in the workspace now. Creating and ending temporary endpoints, resuming a watchdog, the recycle bin and alert delivery history need an owner or admin's key. Nothing ran | Tell the person; an owner or admin does it in the app, or connects with their own key |
 | `internal_error` | WebhookVault failed; the message has a trace id | Retry once; report the trace id if it repeats |
 
-Before any tool runs, the server answers HTTP 401 without a valid key, and 403 with
-`developer_key_not_accepted` for a Developer access key or `api_access_disabled` when the plan has
-no API access.
+Before any tool runs, the server answers HTTP 401 without a valid key (also when the person who
+created the key left the workspace or was disabled), 403 with `developer_key_not_accepted` for a
+Developer access key or `api_access_disabled` when the plan has no API access, and 429 when the
+key's rate is used up.
+
+A key acts for the person who created it: it can do what its scopes allow and, at the same time,
+what that person's role in the workspace allows today. A key made by an admin who later became a
+member loses the owner-or-admin tools above.

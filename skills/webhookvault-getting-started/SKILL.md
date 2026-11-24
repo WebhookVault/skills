@@ -7,7 +7,7 @@ metadata:
   author: "webhookvault"
   version: "0.1.0"
   repository: "https://github.com/WebhookVault/skills"
-  mcp-contract: "2026-10-21"
+  mcp-contract: "2026-11-24"
   mcp-tools: "whoami get_workspace_overview list_endpoints list_providers get_usage search_requests describe_traffic list_deliveries await_request replay_request"
 ---
 
@@ -57,8 +57,10 @@ Anything in the right column is done by a person in the app at https://app.webho
 
 ## First call
 
-1. Call `whoami()`. It names the key, the workspace, the plan and every limit and feature. Read
-   it before explaining any limit; never guess a plan's numbers.
+1. Call `whoami()`. It names the key, its scopes, the role of the person it acts for, the
+   workspace, the plan and every limit and feature. Read it before explaining any limit or
+   refusal; never guess a plan's numbers. A key made by a member cannot create temporary
+   endpoints or resume watchdogs; see [limits-and-errors.md](references/limits-and-errors.md).
 2. For the state of the workspace, call `get_workspace_overview()`: endpoints by status, recent
    captures, delivery success and what wants attention.
 3. To find an endpoint, call `list_endpoints(nameContains)` or `list_endpoints(provider)`. Every
@@ -71,7 +73,7 @@ Code). The names in this skill are the server's own.
 
 | What happens | Meaning | What the person does |
 |---|---|---|
-| HTTP 401 | No key, or the key is unknown or revoked | Create an Agent access key on the API keys page and connect again |
+| HTTP 401 | No key, the key is unknown or revoked, or the person who created it left the workspace or was disabled | Create an Agent access key on the API keys page and connect again |
 | `developer_key_not_accepted` | A Developer access key was used; it works with the API only | Create an Agent access key instead |
 | `api_access_disabled` | The plan does not include API and agent access | Upgrade the plan; see `whoami` once it works |
 | The server is not listed at all | The client was not configured | Follow [connect-clients.md](references/connect-clients.md) |

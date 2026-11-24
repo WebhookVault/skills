@@ -1249,7 +1249,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "The Agent access key in use, its workspace, the plan, and every limit and feature that decides what the workspace can do. Call this first when a limit or a missing feature might explain a problem.",
+      "description": "The Agent access key in use, its scopes, the role of the person it acts for, its workspace, the plan, and every limit and feature that decides what the workspace can do. Call this first when a limit, a missing feature or a refusal might explain a problem.",
       "inputSchema": {
         "type": "object",
         "properties": {}

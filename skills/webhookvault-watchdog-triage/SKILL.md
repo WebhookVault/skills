@@ -7,7 +7,7 @@ metadata:
   author: "webhookvault"
   version: "0.1.0"
   repository: "https://github.com/WebhookVault/skills"
-  mcp-contract: "2026-10-21"
+  mcp-contract: "2026-11-24"
   mcp-tools: "list_watchdogs get_watchdog diagnose_endpoint search_requests get_alert_routing list_alert_deliveries resume_watchdog list_deliveries"
 ---
 
@@ -80,6 +80,9 @@ More on timing: [states.md](references/states.md).
 The only change available here. Ask first, saying it will alarm again when its stream goes quiet.
 Then `resume_watchdog(watchdogId)`. The platform judges it again within a minute. A watchdog over
 the plan's limit stays paused by the plan; resuming cannot change that.
+
+Resuming, and `list_alert_deliveries`, need a key made by an owner or admin. A member's key is
+refused with `workspace_role_required`; say so, and an owner or admin does it in the app.
 
 ## What cannot be done here
 
